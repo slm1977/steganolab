@@ -9,3 +9,5 @@ Destinatari: liceo, anche senza programmazione.
 7. Esporta relazione Markdown.
    
 Il docente può generare PNG da un originale opaco e distribuire entrambi i file con indizi. Per una verifica, non usare il codice sorgente come deposito segreto: le missioni pubbliche sono esercitazioni, non prove protette. Tutor complementare: caricare agent/STEGANOLAB_AGENT.md nel simulatore. Valutazione: osservazioni, correttezza binaria, metodo, motivazione. Durata indicativa 60–90 minuti.
+
+Versione 0.2: usa il percorso guidato, confronta le immagini affiancate e consulta la tabella ASCII. Il bit da estrarre è indipendente dal piano visualizzato; anche l'encoder ha parametri propri.
