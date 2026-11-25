@@ -21,7 +21,7 @@ function downloadPng(item, name) { download(new Blob([PngCodec.encode(item)], {t
 function state(id, text) { $(id + 'state').textContent = text; }
 function invalidate(...slots) { for (const slot of slots) generation[slot]++; }
 function showBits() {
-  const el = $('bits'); el.replaceChildren(); const count = document.createElement('p'); count.textContent = bits.length + ' bit raccolti'; el.append(count);
+  const el = $('bits'); el.replaceChildren(); $('bitsummary').textContent = `${bits.length} bit raccolti · ${Math.floor(bits.length / 8)} byte completi${bits.length % 8 ? ' · ' + (bits.length % 8) + ' bit residui' : ''}`;
   for (const group of bits.slice(0, 512).match(/.{1,8}/g) || []) {
     const row = document.createElement('div'); row.className = 'byte';
     for (let i = 0; i < 8; i++) { const cell = document.createElement('span'); cell.textContent = group[i] ?? '·'; row.append(cell); }
@@ -160,7 +160,7 @@ $('inspect').onclick = () => inspect(Number($('x').value), Number($('y').value))
 $('saveplane').onclick = () => { try { if (planeBuffer) downloadPng(planeBuffer, 'piano.png'); } catch (e) { say(e.message); } };
 $('undo').onclick = () => { bits = bits.slice(0, -1); showBits(); }; $('clear').onclick = () => { bits = ''; showBits(); };
 $('extract').onclick = () => { try { if (!suspect) throw Error('Carica una sospetta'); const n = Number($('count').value); if (!Number.isInteger(n) || n < 1 || n > 65536) throw Error('Limite: 1–65536 bit'); bits = C.extract(suspect.data, suspect.width, suspect.height, $('order').value, $('scan').value, Number($('extractbit').value), n, suspect.hasAlpha); showBits(); } catch (e) { say(e.message); } };
-$('decode').onclick = () => { try { $('decoded').textContent = C.decode(bits); } catch (e) { $('decoded').textContent = e.message; } };
+$('decode').onclick = () => { try { $('decoded').textContent = C.decode(bits); } catch (e) { if (bits.length % 8) { $('decoded').textContent = 'Servono gruppi completi di 8 bit. Bit residui: ' + (bits.length % 8) + '.'; return; } const bytes = Uint8Array.from(bits.match(/.{8}/g) || [], s => parseInt(s, 2)); const preview = new TextDecoder('utf-8').decode(bytes); $('decoded').textContent = 'Sequenza UTF-8 non valida. Verifica numero di bit, ordine dei canali, posizione del bit e scansione.\nAnteprima indicativa (� = sequenza non valida): ' + preview; } };
 function created(data, name) {
   const result = artifact(data, original.width, original.height, original.hasAlpha, name), png = PngCodec.encode(result); invalidate('suspect'); suspect = result; setMode('manual', true); $('brief').textContent = 'Reperto creato nel laboratorio.'; $('view').value = 'suspect'; state('suspect', 'Generato: ' + describe(result)); autoFit = true; render(); download(new Blob([png], {type: 'image/png'}), name); say('Immagine steganografata generata nel formato dell’originale.');
 }
