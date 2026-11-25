@@ -12,7 +12,7 @@ Aprire [il laboratorio](../index.html) e [la guida per studenti](../guide.html) 
 2. Usa Differenze e ispeziona almeno cinque pixel, annotando coordinate e valori decimali e binari. Clicca un pixel e usa le frecce; zoom e griglia aiutano la lettura.
 3. Raccogli dalla sospetta i bit nell'ordine ipotizzato, anche nei canali invariati. Raggruppali in byte MSB-first, decodifica e giustifica la scelta; confronta raccolta manuale, estrazione automatica e tabella ASCII.
 4. Esplora le missioni successive: per le figure osserva i piani e scaricali; per le tracce usa XOR. Nella missione 007 formula e verifica ipotesi senza cercare la soluzione nel codice. Scrivi una relazione distinguendo osservazioni e inferenze.
-5. In **Steganografare** scegli una copertura e crea un breve testo. Annota lunghezza e parametri, scarica e ricarica il reperto per verificarlo. Per una figura carica una maschera delle stesse dimensioni; esplora il piano scelto nel risultato.
+5. In **Steganografare** scegli un’immagine originale e crea un breve testo. Annota lunghezza e parametri, scarica e ricarica il reperto per verificarlo. Per una figura usa «Nascondi immagine in bianco e nero» e carica un’immagine segreta delle stesse dimensioni; esplora il piano scelto nel risultato.
 
 Un piano mostra bianco=1 e nero=0; XOR mostra bianco=bit cambiato e nero=invariato. Un bit invariato può comunque trasportare informazione. I controlli di visualizzazione, estrazione ed encoder sono indipendenti. La raccolta arriva a 65.536 bit, con anteprima dei primi 512.
 
@@ -22,7 +22,17 @@ Un piano mostra bianco=1 e nero=0; XOR mostra bianco=bit cambiato e nero=invaria
 - L'esploratore **Colori RGBA** mostra bit, pesi, somme, riferimento, colore esadecimale e opacità. È una simulazione: non modifica il reperto. Per un pixel RGB l'alfa visualizzato è solo simulabile.
 - Il codec locale preserva i valori grezzi non premoltiplicati; Canvas è usato solo per la vista. La premoltiplicazione può perdere o arrotondare RGB, soprattutto con poca opacità. I metadati accessori non sono conservati e l'anteprima può differire da altri visualizzatori per la gestione colore.
 - La scansione parte da (0,0), per righe o per colonne, seguendo l'ordine dei canali scelti. Ogni canale usa un bit 0–7; i bit del byte si leggono dal più significativo. Non c'è intestazione: servono lunghezza, canali, bit e scansione. La capacità è `floor(larghezza × altezza × canali / 8)` byte UTF-8, non necessariamente caratteri.
-- La maschera scrive un bit per pixel: somma RGB grezza ≥ 384 vale 1, altrimenti 0. **Il suo alfa è ignorato**, quindi anche un pixel trasparente può produrre 1. Il canale A della copertura è disponibile solo in RGBA.
+- L’immagine segreta viene rappresentata con un bit per pixel: somma RGB grezza ≥ 384 vale 1, altrimenti 0. **Il suo alfa è ignorato**, quindi anche un pixel trasparente può produrre 1. Il canale A dell’immagine originale è disponibile solo in RGBA.
+
+## Terminologia dell’interfaccia
+
+- Immagine originale (copertura): supporto dell’informazione nascosta.
+- Immagine segreta: figura da nascondere; immagine steganografata: risultato.
+- Canale di inserimento e Posizione del bit: scelgono dove memorizzare l’informazione.
+- Rimuovi immagine originale / Rimuovi immagine segreta: rimuovono dal laboratorio, non dal disco.
+- Genera e scarica immagine steganografata: crea e salva il risultato PNG.
+
+I tooltip dei controlli forniscono spiegazioni contestuali al passaggio del puntatore.
 
 ## Tutor e valutazione
 
