@@ -35,17 +35,17 @@ function setMode(next, preserve = false) {
   invalidate('original', 'suspect'); mode = next;
   document.querySelector(`input[name="mode"][value="${next}"]`).checked = true;
   $('missioncontrols').hidden = next !== 'mission'; $('manualcontrols').hidden = next !== 'manual';
-  if (!preserve) { original = null; suspect = null; state('original', 'Nessun file selezionato.'); state('suspect', 'Nessun file selezionato.'); state('cover', 'Nessuna copertura corrente.'); $('brief').textContent = next === 'manual' ? 'Carica uno o entrambi i reperti.' : 'Scegli e avvia una missione.'; }
+  if (!preserve) { original = null; suspect = null; state('original', 'Nessun file selezionato.'); state('suspect', 'Nessun file selezionato.'); state('cover', 'Nessuna immagine originale caricata.'); $('brief').textContent = next === 'manual' ? 'Carica uno o entrambi i reperti.' : 'Scegli e avvia una missione.'; }
   else { state('original', original ? describe(original) : 'Nessun originale.'); state('suspect', suspect ? describe(suspect) : 'Nessuna sospetta.'); }
   reset(); autoFit = true; say(''); render();
 }
 document.querySelectorAll('input[name="mode"]').forEach(r => r.onchange = () => setMode(r.value));
 async function loadFile(id, slot, file) {
   if (!file) return; const token = ++generation[slot], stateId = id === 'coverfile' ? 'cover' : id === 'maskfile' ? 'mask' : id;
-  if (slot === 'original') { original = null; state(id === 'coverfile' ? 'original' : 'cover', 'Nessuna copertura corrente.'); if (id === 'coverfile') { invalidate('suspect'); suspect = null; state('suspect', 'Nessuna sospetta.'); } }
+  if (slot === 'original') { original = null; state(id === 'coverfile' ? 'original' : 'cover', 'Nessuna immagine originale caricata.'); if (id === 'coverfile') { invalidate('suspect'); suspect = null; state('suspect', 'Nessuna sospetta.'); } }
   else if (slot === 'suspect') suspect = null; else mask = null;
   state(stateId, `Caricamento: ${file.name}…`);
-  if (slot !== 'mask') { reset(); autoFit = true; $('brief').textContent = mode === 'manual' ? 'Reperti caricati manualmente.' : 'Copertura caricata nel laboratorio.'; }
+  if (slot !== 'mask') { reset(); autoFit = true; $('brief').textContent = mode === 'manual' ? 'Reperti caricati manualmente.' : 'Immagine originale caricata nel laboratorio.'; }
   say(''); render();
   try {
     if (file.size > 64 * 1024 * 1024) throw Error('File PNG troppo grande: massimo 64 MiB');
@@ -53,7 +53,7 @@ async function loadFile(id, slot, file) {
     const item = {...PngCodec.decode(buffer), name: file.name};
     if (slot === 'original') original = item; else if (slot === 'suspect') suspect = item; else mask = item;
     state(stateId, 'Caricato: ' + describe(item));
-    if (slot === 'original') state(id === 'coverfile' ? 'original' : 'cover', 'Copertura condivisa: ' + describe(item));
+    if (slot === 'original') state(id === 'coverfile' ? 'original' : 'cover', 'Immagine originale condivisa: ' + describe(item));
     if (slot !== 'mask') { $('view').value = suspect ? 'suspect' : 'original'; autoFit = true; }
     render();
   } catch (error) { if (token !== generation[slot]) return; state(stateId, `Errore: ${file.name} · ${error.message}`); say(error.message); render(); }
@@ -64,7 +64,7 @@ for (const [id, slot] of [['original', 'original'], ['suspect', 'suspect'], ['co
 }
 function clearSlot(slot) {
   invalidate(slot);
-  if (slot === 'original') { original = null; state('original', 'Nessun file selezionato.'); state('cover', 'Nessuna copertura corrente.'); }
+  if (slot === 'original') { original = null; state('original', 'Nessun file selezionato.'); state('cover', 'Nessuna immagine originale caricata.'); }
   else if (slot === 'suspect') { suspect = null; state('suspect', 'Nessun file selezionato.'); } else { mask = null; state('mask', 'Nessun file selezionato.'); }
   if (slot !== 'mask') { reset(); autoFit = true; } say(''); render();
 }
@@ -83,7 +83,7 @@ function updateControls() {
   for (const opt of $('view').options) opt.disabled = opt.value === 'original' ? !original : opt.value === 'suspect' ? !suspect : opt.value === 'diff' || opt.value === 'xor' ? !paired : !original && !suspect;
   if ($('view').selectedOptions[0].disabled) $('view').value = suspect ? 'suspect' : original ? 'original' : 'suspect';
   const planeImage = suspect || original, alphaView = !!(planeImage?.hasAlpha && ($('view').value !== 'xor' || original?.hasAlpha));
-  updateSelect('channel', [...(alphaView ? 'RGBA' : 'RGB')], 'R', 'Visualizzazione'); updateSelect('maskchannel', [...(original?.hasAlpha ? 'RGBA' : 'RGB')], 'R', 'Maschera');
+  updateSelect('channel', [...(alphaView ? 'RGBA' : 'RGB')], 'R', 'Visualizzazione'); updateSelect('maskchannel', [...(original?.hasAlpha ? 'RGBA' : 'RGB')], 'R', 'Immagine segreta');
   for (const [id, item, label] of [['order', suspect, 'Estrazione'], ['encorder', original, 'Encoder']]) {
     const all = permutations(item?.hasAlpha ? 'RGBA' : 'RGB'), preferred = ['RGB', 'R', 'G', 'B', 'BGR', 'RG', 'RB', 'GB', 'A', 'RGBA'].filter(v => all.includes(v));
     updateSelect(id, [...preferred, ...all.filter(v => !preferred.includes(v))], 'RGB', label);
@@ -126,7 +126,7 @@ function render() {
     $('planeinfo').textContent = view === 'xor' ? `Bianco = bit modificato; nero = invariato. ${n} bit modificati.` : `Bianco = 1; nero = 0. ${n} bit a 1.`;
   }
   $('saveplane').hidden = !planeBuffer; drawCanvas(reference, original); drawCanvas(canvas, output);
-  const preview = $('coverpreview'); preview.hidden = !original; $('coverinfo').textContent = original ? describe(original) : 'Nessuna copertura corrente.';
+  const preview = $('coverpreview'); preview.hidden = !original; $('coverinfo').textContent = original ? describe(original) : 'Nessuna immagine originale caricata.';
   if (original) { preview.width = original.width; preview.height = original.height; preview.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(original.data), original.width, original.height), 0, 0); }
   else { preview.width = 1; preview.height = 1; preview.getContext('2d').clearRect(0, 0, 1, 1); }
   if (paired) { const d = C.diff(original.data, suspect.data, original.hasAlpha, suspect.hasAlpha); $('stats').textContent = `${d.pixels} pixel alterati su ${original.width * original.height} · ${d.values} valori alterati · variazione massima ${d.max} · ${Object.entries(d.channels).map(([c, n]) => `${c}: ${n}`).join(' · ')}${d.formatsDiffer ? ' · Formati diversi: confronto solo RGB; XOR A non disponibile.' : ''}`; }
@@ -162,10 +162,10 @@ $('undo').onclick = () => { bits = bits.slice(0, -1); showBits(); }; $('clear').
 $('extract').onclick = () => { try { if (!suspect) throw Error('Carica una sospetta'); const n = Number($('count').value); if (!Number.isInteger(n) || n < 1 || n > 65536) throw Error('Limite: 1–65536 bit'); bits = C.extract(suspect.data, suspect.width, suspect.height, $('order').value, $('scan').value, Number($('extractbit').value), n, suspect.hasAlpha); showBits(); } catch (e) { say(e.message); } };
 $('decode').onclick = () => { try { $('decoded').textContent = C.decode(bits); } catch (e) { $('decoded').textContent = e.message; } };
 function created(data, name) {
-  const result = artifact(data, original.width, original.height, original.hasAlpha, name), png = PngCodec.encode(result); invalidate('suspect'); suspect = result; setMode('manual', true); $('brief').textContent = 'Reperto creato nel laboratorio.'; $('view').value = 'suspect'; state('suspect', 'Generato: ' + describe(result)); autoFit = true; render(); download(new Blob([png], {type: 'image/png'}), name); say('PNG generata nel formato nativo della copertura.');
+  const result = artifact(data, original.width, original.height, original.hasAlpha, name), png = PngCodec.encode(result); invalidate('suspect'); suspect = result; setMode('manual', true); $('brief').textContent = 'Reperto creato nel laboratorio.'; $('view').value = 'suspect'; state('suspect', 'Generato: ' + describe(result)); autoFit = true; render(); download(new Blob([png], {type: 'image/png'}), name); say('Immagine steganografata generata nel formato dell’originale.');
 }
-$('encode').onclick = () => { try { if (!original) throw Error('Carica una copertura'); if (!$('message').value) throw Error('Inserisci un messaggio'); created(C.encode(original.data, original.width, original.height, $('encorder').value, $('encscan').value, Number($('encbit').value), $('message').value, original.hasAlpha), 'reperto.png'); } catch (e) { say(e.message); } };
-$('hidemask').onclick = () => { try { if (!original || !mask) throw Error('Carica copertura e maschera'); if (mask.width !== original.width || mask.height !== original.height) throw Error('La PNG segreta deve avere le stesse dimensioni della copertura'); created(C.hideMask(original.data, mask.data, $('maskchannel').value, Number($('maskbit').value), original.hasAlpha), 'reperto-immagine.png'); } catch (e) { say(e.message); } };
+$('encode').onclick = () => { try { if (!original) throw Error('Carica un’immagine originale'); if (!$('message').value) throw Error('Inserisci un messaggio'); created(C.encode(original.data, original.width, original.height, $('encorder').value, $('encscan').value, Number($('encbit').value), $('message').value, original.hasAlpha), 'reperto.png'); } catch (e) { say(e.message); } };
+$('hidemask').onclick = () => { try { if (!original || !mask) throw Error('Carica l’immagine originale e l’immagine segreta'); if (mask.width !== original.width || mask.height !== original.height) throw Error('La PNG segreta deve avere le stesse dimensioni dell’immagine originale'); created(C.hideMask(original.data, mask.data, $('maskchannel').value, Number($('maskbit').value), original.hasAlpha), 'reperto-immagine.png'); } catch (e) { say(e.message); } };
 $('report').onclick = () => download(new Blob(['# Relazione SteganoLab\n\n' + $('brief').textContent + '\n\n' + $('notes').value + '\n\nBit: ' + bits + '\n\nDecodifica: ' + $('decoded').textContent], {type: 'text/markdown'}), 'relazione.md');
 const steps = ['Confronta i reperti e formula una prima ipotesi.', 'Attiva Differenze e osserva dove si concentrano le alterazioni.', 'Ispeziona almeno cinque pixel: quali bit cambiano?', 'Raccogli i bit della sospetta, anche quelli invariati.', 'Decodifica i byte e verifica la tua ipotesi.', 'Scrivi ed esporta la relazione.'];
 function guide() { const visual = ['Confronta i reperti e formula una ipotesi.', 'Esplora i piani dei canali.', 'Cerca una figura riconoscibile.', 'Annota canale e posizione del bit.', 'Scarica il piano e descrivi la figura.', 'Esporta la relazione.']; $('guide').textContent = `${step + 1} / ${steps.length} — ${([3, 4].includes(Number($('mission').value)) ? visual : steps)[step]}`; $('prevstep').disabled = step === 0; $('nextstep').disabled = step === steps.length - 1; }
@@ -180,7 +180,7 @@ $('load').onclick = () => {
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const on = m === 3 ? ((x - 23) ** 2 + (y - 17) ** 2 < 100 || (x - 41) ** 2 + (y - 17) ** 2 < 100 || (y >= 17 && y < 42 && Math.abs(x - 32) < (42 - y) * 0.85)) : (x >= 5 && x <= 53 && Math.abs(y - (39 - x * 0.55 + 4 * Math.sin(x / 5))) < 1.5 && x % 8 < 5) || (x >= 49 && x <= 61 && y >= 4 && y <= 16 && (Math.abs(x - 55 - (y - 10)) < 1.5 || Math.abs(x - 55 + (y - 10)) < 1.5)); data.set([on ? 255 : 0, on ? 255 : 0, on ? 255 : 0, 255], (y * w + x) * 4); }
     result = C.hideMask(d, data, m === 3 ? 'G' : 'B', m === 3 ? 0 : 1); brief = m === 3 ? 'Il simbolo nascosto: esplora i 24 piani e identifica la figura.' : 'La mappa del tesoro: trova il percorso e il segno di destinazione nei piani di bit.';
   } else { const entry = m === 5 ? ['TRAC', 'RG', 'row', 2, 'Le tracce digitali: individua canali e bit alterati con XOR, poi ricostruisci 4 caratteri.'] : m === 6 ? ['LUCE', 'A', 'row', 0, 'Il segreto della trasparenza: individua le alterazioni e ricostruisci 4 caratteri UTF-8 (32 bit).'] : cases[m]; result = C.encode(d, w, h, entry[1], entry[2], entry[3], entry[0], alpha); brief = entry[4]; }
-  suspect = artifact(result, w, h, alpha, 'Sospetta sintetica'); reset(); $('brief').textContent = brief + ' Reperto sintetico.'; state('original', describe(original)); state('suspect', describe(suspect)); state('cover', 'Copertura condivisa: ' + describe(original)); $('view').value = 'suspect'; $('count').value = 32; autoFit = true; say('Missione avviata'); render();
+  suspect = artifact(result, w, h, alpha, 'Sospetta sintetica'); reset(); $('brief').textContent = brief + ' Reperto sintetico.'; state('original', describe(original)); state('suspect', describe(suspect)); state('cover', 'Immagine originale condivisa: ' + describe(original)); $('view').value = 'suspect'; $('count').value = 32; autoFit = true; say('Missione avviata'); render();
 };
 function switchTab(index) { tabs.forEach((tab, i) => { tab.setAttribute('aria-selected', String(i === index)); tab.tabIndex = i === index ? 0 : -1; panels[i].hidden = i !== index; }); render(); }
 tabs.forEach((tab, i) => { tab.onclick = () => switchTab(i); tab.onkeydown = e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); const next = 1 - i; switchTab(next); tabs[next].focus(); } }; });
