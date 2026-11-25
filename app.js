@@ -2,6 +2,7 @@
 const $ = id => document.getElementById(id);
 const C = Stegano, canvas = $('canvas'), reference = $('reference');
 let original = null, suspect = null, mask = null, bits = '', selected = [0, 0];
+let bitSources = [];
 let mode = 'mission', step = 0, autoFit = true, zoom = 1, planeBuffer = null;
 const generation = {original: 0, suspect: 0, mask: 0};
 const tabs = [$('tab-analysis'), $('tab-encoder')], panels = [$('analysis'), $('encoder')];
@@ -22,14 +23,18 @@ function state(id, text) { $(id + 'state').textContent = text; }
 function invalidate(...slots) { for (const slot of slots) generation[slot]++; }
 function showBits() {
   const el = $('bits'); el.replaceChildren(); $('bitsummary').textContent = `${bits.length} bit raccolti · ${Math.floor(bits.length / 8)} byte completi${bits.length % 8 ? ' · ' + (bits.length % 8) + ' bit residui' : ''}`;
+  let byteIndex = 0;
   for (const group of bits.slice(0, 512).match(/.{1,8}/g) || []) {
     const row = document.createElement('div'); row.className = 'byte';
+    const sources = bitSources.slice(byteIndex * 8, byteIndex * 8 + group.length);
+    const coords = [...new Set(sources.map(p => `(${p.x}, ${p.y})`))];
+    const label = document.createElement('div'); label.className = 'byte-source'; label.textContent = `${++byteIndex}. ${coords.join(' · ')}`; label.title = sources.map((p,i) => `Bit ${7-i}: (${p.x}, ${p.y}) · ${p.channel} · posizione ${p.bit}`).join('\n'); el.append(label);
     for (let i = 0; i < 8; i++) { const cell = document.createElement('span'); cell.textContent = group[i] ?? '·'; row.append(cell); }
     const val = document.createElement('small'); val.textContent = group.length === 8 ? ' = ' + parseInt(group, 2) : ''; row.append(val); el.append(row);
   }
   if (bits.length > 512) el.append('… anteprima dei primi 512 bit'); $('decoded').textContent = '';
 }
-function reset() { step = 0; guide(); bits = ''; selected = [0, 0]; $('notes').value = ''; showBits(); }
+function reset() { step = 0; guide(); bits = ''; bitSources = []; selected = [0, 0]; $('notes').value = ''; showBits(); }
 function setMode(next, preserve = false) {
   if (mode === next && !preserve) return;
   invalidate('original', 'suspect'); mode = next;
@@ -144,7 +149,7 @@ function inspect(x, y) {
     const row = body.insertRow(); row.insertCell().textContent = 'RGBA'[c];
     const a = showOriginal && (c !== 3 || original.hasAlpha) ? original.data[(y * original.width + x) * 4 + c] : null, b = showSuspect && (c !== 3 || suspect.hasAlpha) ? suspect.data[(y * suspect.width + x) * 4 + c] : null;
     row.insertCell().textContent = a === null ? '—' : `${a} / ${a.toString(2).padStart(8, '0')}`; const cell = row.insertCell(); if (b === null) { cell.textContent = '—'; continue; } cell.append(b + ' / ');
-    for (let k = 7; k >= 0; k--) { const button = document.createElement('button'); button.textContent = (b >> k) & 1; button.title = `Bit ${k} · peso ${2 ** k}`; button.setAttribute('aria-label', `Canale ${'RGBA'[c]} bit ${k} valore ${button.textContent}`); if (a !== null && ((a ^ b) >> k & 1)) button.className = 'changed'; button.onclick = () => { if (bits.length < 65536) { bits += button.textContent; showBits(); } else say('Limite: 65536 bit raccolti.'); }; cell.append(button); }
+    for (let k = 7; k >= 0; k--) { const button = document.createElement('button'); button.textContent = (b >> k) & 1; button.title = `Bit ${k} · peso ${2 ** k}`; button.setAttribute('aria-label', `Canale ${'RGBA'[c]} bit ${k} valore ${button.textContent}`); if (a !== null && ((a ^ b) >> k & 1)) button.className = 'changed'; button.onclick = () => { if (bits.length < 65536) { bits += button.textContent; bitSources.push({x,y,channel:'RGBA'[c],bit:k}); showBits(); } else say('Limite: 65536 bit raccolti.'); }; cell.append(button); }
   }
   $('pixel').replaceChildren(table);
 }
@@ -158,8 +163,8 @@ for (const c of [canvas, reference]) {
 }
 $('inspect').onclick = () => inspect(Number($('x').value), Number($('y').value)); $('next').onclick = () => { const b = current(); if (b) { const n = selected[1] * b.width + selected[0] + 1; if (n < b.width * b.height) inspect(n % b.width, Math.floor(n / b.width)); } };
 $('saveplane').onclick = () => { try { if (planeBuffer) downloadPng(planeBuffer, 'piano.png'); } catch (e) { say(e.message); } };
-$('undo').onclick = () => { bits = bits.slice(0, -1); showBits(); }; $('clear').onclick = () => { bits = ''; showBits(); };
-$('extract').onclick = () => { try { if (!suspect) throw Error('Carica una sospetta'); const n = Number($('count').value); if (!Number.isInteger(n) || n < 1 || n > 65536) throw Error('Limite: 1–65536 bit'); bits = C.extract(suspect.data, suspect.width, suspect.height, $('order').value, $('scan').value, Number($('extractbit').value), n, suspect.hasAlpha); showBits(); } catch (e) { say(e.message); } };
+$('undo').onclick = () => { bits = bits.slice(0, -1); bitSources.pop(); showBits(); }; $('clear').onclick = () => { bits = ''; bitSources = []; showBits(); };
+$('extract').onclick = () => { try { if (!suspect) throw Error('Carica una sospetta'); const n = Number($('count').value); if (!Number.isInteger(n) || n < 1 || n > 65536) throw Error('Limite: 1–65536 bit'); bits = C.extract(suspect.data, suspect.width, suspect.height, $('order').value, $('scan').value, Number($('extractbit').value), n, suspect.hasAlpha); bitSources = []; for (const p of C.positions(suspect.width, suspect.height, $('order').value, $('scan').value, suspect.hasAlpha)) { if (bitSources.length === n) break; const pixel = Math.floor(p / 4); bitSources.push({x:pixel % suspect.width,y:Math.floor(pixel / suspect.width),channel:'RGBA'[p % 4],bit:Number($('extractbit').value)}); } showBits(); } catch (e) { say(e.message); } };
 $('decode').onclick = () => { try { $('decoded').textContent = C.decode(bits); } catch (e) { if (bits.length % 8) { $('decoded').textContent = 'Servono gruppi completi di 8 bit. Bit residui: ' + (bits.length % 8) + '.'; return; } const bytes = Uint8Array.from(bits.match(/.{8}/g) || [], s => parseInt(s, 2)); const preview = new TextDecoder('utf-8').decode(bytes); $('decoded').textContent = 'Sequenza UTF-8 non valida. Verifica numero di bit, ordine dei canali, posizione del bit e scansione.\nAnteprima indicativa (� = sequenza non valida): ' + preview; } };
 function created(data, name) {
   const result = artifact(data, original.width, original.height, original.hasAlpha, name), png = PngCodec.encode(result); invalidate('suspect'); suspect = result; setMode('manual', true); $('brief').textContent = 'Reperto creato nel laboratorio.'; $('view').value = 'suspect'; state('suspect', 'Generato: ' + describe(result)); autoFit = true; render(); download(new Blob([png], {type: 'image/png'}), name); say('Immagine steganografata generata nel formato dell’originale.');
