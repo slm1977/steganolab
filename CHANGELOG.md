@@ -1,4 +1,6 @@
 # Changelog
+## 0.4.0
+Analysis and encoding tabs, compact zoom/grid controls, searchable ASCII dialog and HTML guide. Shared current cover, browser validation pending.
 ## 0.3.0
 XOR bit planes, monochrome image embedding and PNG plane export, three new synthetic missions, keyboard pixel navigation with viewport tracking. Browser tests pending.
 ## 0.2.0
