@@ -1,0 +1,2 @@
+# SteganoLab contributor instructions
+Italian UI; static HTML/CSS/JS; no external network, analytics, credentials or dependencies. Preserve exact RGB operations for supported opaque PNG. Keep core.js deterministic and testable with Node. Run node tests/core.test.js after changes; manually verify browser upload/export and pixel inspection. Never claim AI sees UI events without integration. Keep educational manual extraction available. Document changes and limitations. Do not publish student data.
