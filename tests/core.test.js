@@ -151,3 +151,4 @@ for(const mission of [3,4]){
 	assert.deepEqual(C.plane(result,channel,bit),gray(expectedPlane));
 }
 console.log('RGBA, validation, protocol and six mission regression tests passed');
+{const assert=require('node:assert/strict'),C=require('../core.js');const d=new Uint8ClampedArray(6*5*4).fill(100);for(const scan of ['row','col']){const a=C.encode(d,6,5,'RGB',scan,0,'OK',false,2,1);assert.equal(C.decode(C.extract(a,6,5,'RGB',scan,0,16,false,2,1)),'OK');const before=[...C.positions(6,5,'RGB',scan)].slice(0,C.startIndex(6,5,scan,2,1)*3);for(const i of before)assert.equal(a[i],d[i]);}assert.throws(()=>C.encode(d,6,5,'RGB','row',0,'OK',false,5,4));assert.throws(()=>C.extract(d,6,5,'RGB','row',0,1,false,-1,0));}
