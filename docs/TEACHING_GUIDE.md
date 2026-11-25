@@ -10,7 +10,7 @@ Aprire [il laboratorio](../index.html) e [la guida per studenti](../guide.html) 
 
 1. Avvia la prima missione; confronta originale e sospetta e formula un'ipotesi. La modalità **Caricamento manuale** permette invece di usare uno o entrambi i propri reperti; per confronto e XOR occorrono dimensioni uguali.
 2. Usa Differenze e ispeziona almeno cinque pixel, annotando coordinate e valori decimali e binari. Clicca un pixel e usa le frecce; zoom e griglia aiutano la lettura.
-3. Raccogli dalla sospetta i bit nell'ordine ipotizzato, anche nei canali invariati. Raggruppali in byte MSB-first, decodifica e giustifica la scelta; confronta raccolta manuale, estrazione automatica e tabella ASCII.
+3. Raccogli dalla sospetta i bit nell'ordine ipotizzato, anche nei canali invariati. Raggruppali in byte MSB-first, decodifica e giustifica la scelta; confronta raccolta manuale, estrazione automatica e tabella ASCII. Il riepilogo dei bit permette di comprimere o espandere l’elenco dei byte senza perdere dati. In caso di UTF-8 non valido, l’anteprima indicativa usa � per le sequenze non valide: verifica lunghezza e parametri.
 4. Esplora le missioni successive: per le figure osserva i piani e scaricali; per le tracce usa XOR. Nella missione 007 formula e verifica ipotesi senza cercare la soluzione nel codice. Scrivi una relazione distinguendo osservazioni e inferenze.
 5. In **Steganografare** scegli un’immagine originale e crea un breve testo. Annota lunghezza e parametri, scarica e ricarica il reperto per verificarlo. Per una figura usa «Nascondi immagine in bianco e nero» e carica un’immagine segreta delle stesse dimensioni; esplora il piano scelto nel risultato.
 
