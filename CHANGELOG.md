@@ -1,4 +1,11 @@
 # Changelog
+
+## 0.5.0
+- Codec PNG locale con Pako 2.1.0 per PNG statiche RGB/RGBA a 8 bit: analisi ed esportazione dei pixel non premoltiplicati senza passare da Canvas. I metadati accessori non sono conservati.
+- Canale alfa, piani e differenze RGBA, esploratore RGBA e missione 007; caricamento manuale separato dalle missioni. Nessuno spoiler sulla soluzione.
+- Rifiuto di `tRNS`, APNG, Adam7 e formati non supportati; limiti di 64 MiB e 4 milioni di pixel. La soglia della maschera ignora il suo alfa.
+- Protocollo UTF-8 senza intestazione e MSB-first mantenuto; documentazione e istruzioni di verifica aggiornate.
+
 ## 0.4.2
 RGB explorer: positional powers of two, active weight highlighting and live decimal decomposition.
 ## 0.4.1
