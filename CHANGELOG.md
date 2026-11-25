@@ -1,4 +1,6 @@
 # Changelog
+## 0.4.2
+RGB explorer: positional powers of two, active weight highlighting and live decimal decomposition.
 ## 0.4.1
 Interactive RGB explorer, reference comparison, bit toggles, common color palette and selected pixel import. Browser validation pending.
 ## 0.4.0
