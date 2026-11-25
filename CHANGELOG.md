@@ -1,4 +1,6 @@
 # Changelog
+## 0.4.1
+Interactive RGB explorer, reference comparison, bit toggles, common color palette and selected pixel import. Browser validation pending.
 ## 0.4.0
 Analysis and encoding tabs, compact zoom/grid controls, searchable ASCII dialog and HTML guide. Shared current cover, browser validation pending.
 ## 0.3.0
