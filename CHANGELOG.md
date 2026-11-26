@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.7
+- Zoom centrato sul puntatore con Ctrl + rotellina, scorrimento sincronizzato e Shift + rotellina orizzontale.
+- Riquadri di analisi ad altezza stabile e controlli raggruppati in righe adattive.
+
 ## 0.5.6
 - Pan mediante trascinamento del mouse sulle immagini ingrandite, cursori grab/grabbing e sincronizzazione delle immagini confrontabili. Il clic breve continua a selezionare il pixel.
 

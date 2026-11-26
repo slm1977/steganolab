@@ -10,3 +10,15 @@ header{padding-bottom:.5rem}.toolbar{display:flex;justify-content:space-between;
 #encoder .encoder-previews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;align-items:start} .encoder-previews>div{min-width:0} .encoder-previews h3{margin:.5rem 0} #coverpreview,#resultpreview{display:block;max-width:100%;max-height:350px;width:auto;height:auto;object-fit:contain} #coverpreview[hidden],#resultpreview[hidden]{display:none} .encoder-previews .coverchecker{max-width:100%;width:fit-content} @media(max-width:480px){#encoder .encoder-previews{grid-template-columns:1fr}}
 
 #analysis .viewport canvas.can-pan{cursor:grab}#analysis .viewport canvas.panning{cursor:grabbing;user-select:none}#analysis .viewport canvas{touch-action:none}
+
+/* Stable analysis viewports and compact responsive controls */
+#analysis .viewport{height:clamp(220px,38vh,420px);max-height:none;min-width:0;background:#101923;overflow:auto;overscroll-behavior:contain}
+#analysis .canvaswrap{margin:auto;min-width:0;background-color:#d8dfe3;background-image:conic-gradient(#9aa9b2 25%,#d8dfe3 0 50%,#9aa9b2 0 75%,#d8dfe3 0);background-size:16px 16px}
+#analysis .viewport{display:flex;align-items:flex-start}#analysis .canvaswrap{flex:none}
+.compact-actions,.offsetfields{display:flex;flex-wrap:wrap;align-items:end;gap:.35rem}
+.compact-actions label,.compact-actions button,.offsetfields label,.offsetfields button{margin:0}
+.offsetfields p{flex-basis:100%}.offsetfields p:empty{display:none}
+.filefield{display:flex;flex-wrap:wrap;align-items:end;gap:.35rem}.filefield label{flex:1 1 190px;margin:0;min-width:0}.filefield input{width:100%}.filefield .filestate{order:3;flex-basis:100%;margin:0}.filefield button{margin:0}
+#analysis section,#encoder section{padding:.8rem}#analysis section p,#encoder section p{margin:.5rem 0}#analysis .controls{gap:.35rem}#analysis .controls label{margin:0}#analysis .zoomrow{align-items:center}#analysis .zoomrow label:first-child{flex-direction:row;align-items:center;flex-wrap:wrap}
+#analysis .viewport canvas.can-pan{cursor:grab}#analysis .viewport canvas.panning{cursor:grabbing}
+@media(max-width:850px){#analysis,#encoder{padding:.65rem;gap:.65rem}}

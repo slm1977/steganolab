@@ -48,3 +48,6 @@ L’Esploratore UTF-8 converte il testo in punti di codice Unicode e byte decima
 
 
 Nella scheda Steganografare, dopo la generazione del testo o della figura binaria, l’anteprima del reperto compare accanto all’originale alla stessa scala. Sostituire l’originale o il reperto azzera l’anteprima. Su schermi molto stretti le immagini sono impilate.
+
+
+Nel banco di analisi, Ctrl + rotellina ingrandisce o riduce attorno al puntatore; Shift + rotellina scorre orizzontalmente. La rotellina normale scorre le immagini confrontabili in sincronia. I riquadri mantengono un’altezza stabile al variare dello zoom.

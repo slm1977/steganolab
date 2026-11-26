@@ -123,7 +123,7 @@ function updateControls() {
 function fitZoom() {
   const items = [original, current()].filter(Boolean); if (!items.length || panels[0].hidden) return;
   const widths = [...document.querySelectorAll('.viewport')].map(e => e.clientWidth).filter(n => n > 0); if (!widths.length) return;
-  zoom = Math.min(24, Math.min(...widths) / Math.max(...items.map(i => i.width)), 400 / Math.max(...items.map(i => i.height))); $('zoom').value = String(Math.log(zoom));
+  zoom = Math.min(24, Math.min(...widths) / Math.max(...items.map(i => i.width)), Math.min(...[...document.querySelectorAll('.viewport')].map(e=>e.clientHeight).filter(n=>n>0)) / Math.max(...items.map(i => i.height))); $('zoom').value = String(Math.log(zoom));
 }
 function drawCanvas(element, item) {
   const wrap = element.parentElement; wrap.hidden = !item;
@@ -194,6 +194,20 @@ function canPan(c){const v=panViewport(c);return !c.parentElement.hidden&&(v.scr
 function syncPan(c){if(!comparable())return;const from=panViewport(c),other=panViewport(c===canvas?reference:canvas);if(other===from)return;if(Math.abs(other.scrollLeft-from.scrollLeft)>1)other.scrollLeft=from.scrollLeft;if(Math.abs(other.scrollTop-from.scrollTop)>1)other.scrollTop=from.scrollTop;}
 for(const c of panCanvases){
  const vp=panViewport(c);let drag=null;
+ vp.addEventListener('wheel',e=>{
+   const unit=e.deltaMode===1?16:e.deltaMode===2?vp.clientHeight:1;
+   if(e.ctrlKey||e.metaKey){
+     e.preventDefault();if(c.parentElement.hidden||!e.deltaY)return;
+     const before=c.getBoundingClientRect(), vr=vp.getBoundingClientRect();
+     const px=Math.max(0,Math.min(c.width,(e.clientX-before.left)/zoom)),py=Math.max(0,Math.min(c.height,(e.clientY-before.top)/zoom));
+     const slider=$('zoom'),next=Math.max(Number(slider.min),Math.min(Number(slider.max),Math.log(zoom)-e.deltaY*unit*.002));
+     autoFit=false;slider.value=String(next);zoom=Math.exp(Number(slider.value));render();
+     const after=c.getBoundingClientRect();vp.scrollLeft+=after.left+px*zoom-e.clientX;vp.scrollTop+=after.top+py*zoom-e.clientY;syncPan(c);
+     c.classList.toggle('can-pan',canPan(c));
+   }else if(e.shiftKey){e.preventDefault();vp.scrollLeft+=(e.deltaX||e.deltaY)*unit;syncPan(c);}
+   else if(canPan(c)){e.preventDefault();vp.scrollLeft+=e.deltaX*unit;vp.scrollTop+=e.deltaY*unit;syncPan(c);}
+ },{passive:false});
+
  c.addEventListener('pointerenter',()=>{c.classList.toggle('can-pan',canPan(c));});
  c.addEventListener('pointerdown',e=>{panSuppressed.delete(c);if(e.button!==0||!canPan(c))return;drag={id:e.pointerId,x:e.clientX,y:e.clientY,left:vp.scrollLeft,top:vp.scrollTop,moved:false};});
  c.addEventListener('pointermove',e=>{c.classList.toggle('can-pan',canPan(c));if(!drag||drag.id!==e.pointerId)return;if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<4)return;if(!drag.moved){drag.moved=true;c.setPointerCapture(e.pointerId);c.classList.add('panning');}vp.scrollLeft=drag.left-(e.clientX-drag.x);vp.scrollTop=drag.top-(e.clientY-drag.y);syncPan(c);e.preventDefault();});

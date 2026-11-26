@@ -1,4 +1,4 @@
-# SteganoLab 0.5.6
+# SteganoLab 0.5.7
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -69,3 +69,6 @@ Nella scheda Steganografare, dopo la generazione del testo o della figura binari
 
 
 Nel banco di analisi, trascina con il mouse un’immagine ingrandita per spostare la vista; se originale e sospetta sono confrontabili, lo spostamento è sincronizzato. Un clic breve continua a selezionare il pixel.
+
+
+Nel banco di analisi, Ctrl + rotellina ingrandisce o riduce attorno al puntatore; Shift + rotellina scorre orizzontalmente. La rotellina normale scorre le immagini confrontabili in sincronia. I riquadri mantengono un’altezza stabile al variare dello zoom.
