@@ -1,4 +1,4 @@
-# SteganoLab 0.5.7
+# SteganoLab 0.5.8
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -72,3 +72,6 @@ Nel banco di analisi, trascina con il mouse un’immagine ingrandita per spostar
 
 
 Nel banco di analisi, Ctrl + rotellina ingrandisce o riduce attorno al puntatore; Shift + rotellina scorre orizzontalmente. La rotellina normale scorre le immagini confrontabili in sincronia. I riquadri mantengono un’altezza stabile al variare dello zoom.
+
+
+L’Esploratore UTF-8 si apre in una finestra ampia e ridimensionabile trascinando l’angolo inferiore destro; le tabelle restano scorrevoli.

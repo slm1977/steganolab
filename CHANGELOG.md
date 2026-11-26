@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.8
+- Esploratore UTF-8 più ampio, ridimensionabile, con campo testo a tutta larghezza e tabelle scorrevoli.
+
 ## 0.5.7
 - Zoom centrato sul puntatore con Ctrl + rotellina, scorrimento sincronizzato e Shift + rotellina orizzontale.
 - Riquadri di analisi ad altezza stabile e controlli raggruppati in righe adattive.

@@ -22,3 +22,7 @@ header{padding-bottom:.5rem}.toolbar{display:flex;justify-content:space-between;
 #analysis section,#encoder section{padding:.8rem}#analysis section p,#encoder section p{margin:.5rem 0}#analysis .controls{gap:.35rem}#analysis .controls label{margin:0}#analysis .zoomrow{align-items:center}#analysis .zoomrow label:first-child{flex-direction:row;align-items:center;flex-wrap:wrap}
 #analysis .viewport canvas.can-pan{cursor:grab}#analysis .viewport canvas.panning{cursor:grabbing}
 @media(max-width:850px){#analysis,#encoder{padding:.65rem;gap:.65rem}}
+
+/* Spacious, resizable UTF-8 explorer */
+#asciidialog{width:min(1100px,94vw);height:min(780px,86vh);max-width:96vw;max-height:92vh;min-width:min(360px,94vw);min-height:min(300px,80vh);resize:both;overflow:auto;padding:1.2rem}
+#asciidialog>label{display:flex;width:100%;margin:.5rem 0}#utftext{width:100%;min-height:4rem;resize:vertical}#asciidialog .asciiscroll{max-height:35vh;overflow:auto}#asciidialog [data-utf-table="main"]{max-height:none;min-height:100px;height:clamp(100px,calc(100% - 270px),500px)}#asciidialog:has(details[open]) [data-utf-table="main"]{height:clamp(100px,calc(45% - 60px),300px)}#asciidialog [data-utf-table="reference"]{max-height:35vh}#asciidialog td,#asciidialog th{padding:.5rem .65rem}#asciidialog .utf-resize-hint{font-size:.8rem;color:#b7c9d7;margin:.25rem 0}#asciidialog .dialoghead{position:sticky;top:0;background:#1b2937;z-index:2}#asciidialog table{min-width:540px}
