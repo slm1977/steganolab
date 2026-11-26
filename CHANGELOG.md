@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.0
+- Quattro modalità di analisi, confronto dei piani originale/sospetta, mappe binarie e matrice interattiva delle alterazioni XOR. Vista singola senza coppia confrontabile e coordinate del puntatore.
+
 ## 0.6.5
 - Messaggio multilinea e contatore dinamico dei byte UTF-8 residui.
 - Generazione anteprima senza download; salvataggio PNG separato.
