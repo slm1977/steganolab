@@ -1,8 +1,8 @@
-# SteganoLab 0.5.0
+# SteganoLab 0.5.2
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
-In alternativa, dalla cartella del progetto avvia un server statico locale opzionale, per esempio con Python 3:
+In alternativa, dalla cartella del progetto avvia un server statico locale (necessario per caricare la galleria di esempio), per esempio con Python 3:
 
 ```sh
 python3 -m http.server 8000 --bind 127.0.0.1
@@ -14,7 +14,7 @@ Apri <http://127.0.0.1:8000/> e interrompi il server con Ctrl+C. Non esporre il 
 
 1. In **Steganalizzare**, avvia una missione sintetica oppure scegli **Caricamento manuale** e carica originale e/o sospetta. Per confrontare e usare XOR servono entrambe, delle stesse dimensioni.
 2. Confronta le immagini, osserva Differenze e piani di bit, clicca un pixel e usa le frecce. Raccogli i bit della sospetta anche quando non sono cambiati, manualmente o con l'estrazione automatica; decodifica e annota osservazioni e ipotesi nella relazione.
-3. In **Steganografare** usa l'originale corrente o carica una copertura. Scegli canali, bit e scansione, inserisci un testo UTF-8 e genera la PNG; per una figura usa una PNG segreta delle stesse dimensioni. Ricarica il risultato per controllarlo. I controlli di visualizzazione, estrazione ed encoder sono indipendenti.
+3. In **Steganografare** usa l'originale corrente, scegli una delle sei PNG di esempio oppure carica una copertura dal PC. Scegli canali, bit e scansione, inserisci un testo UTF-8 e genera la PNG; per una figura usa una PNG segreta delle stesse dimensioni. Ricarica il risultato per controllarlo. I controlli di visualizzazione, estrazione ed encoder sono indipendenti.
 
 La raccolta è limitata a 65.536 bit; la schermata ne mostra in anteprima i primi 512. La tabella ASCII e l'esploratore RGBA aiutano a interpretare valori e bit; l'esploratore è una simulazione e non modifica il reperto.
 

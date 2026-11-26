@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.2
+- Galleria di sei PNG statiche (tre RGB e tre RGBA, 320 × 200, 8 bit) in `images/examples/`, selezionabili e scaricabili nella scheda Steganografare.
+- Caricamento PNG dal PC invariato; aggiornate guida utente e base di conoscenza IA.
+- Decodifica delle sei risorse e sintassi JavaScript verificate; test browser e deploy da verificare.
+
 ## 0.5.0
 - Codec PNG locale con Pako 2.1.0 per PNG statiche RGB/RGBA a 8 bit: analisi ed esportazione dei pixel non premoltiplicati senza passare da Canvas. I metadati accessori non sono conservati.
 - Canale alfa, piani e differenze RGBA, esploratore RGBA e missione 007; caricamento manuale separato dalle missioni. Nessuno spoiler sulla soluzione.

@@ -39,3 +39,6 @@ I tooltip dei controlli forniscono spiegazioni contestuali al passaggio del punt
 Il tutor complementare può usare [le istruzioni dedicate](../agent/STEGANOLAB_AGENT.md), ma non è integrato con il laboratorio: non vede click, pixel o file e deve chiedere allo studente di descriverli. Valutare osservazioni, correttezza binaria, metodo, motivazione e autonomia, non soltanto la risposta finale. Non rivelare la soluzione della missione 007. Per le verifiche tecniche e manuali vedere la [specifica](TECHNICAL_SPECIFICATION.md).
 ## Offset testuale (v0.5.1)
 Coordinate X,Y intere, origine (0,0). Scansione per righe: indice y*w+x; per colonne: x*h+y. Capacità residua (w*h-indice)*numero canali. Encoder ed estrazione automatica usano lo stesso offset; raccolta manuale libera. Nessuna intestazione aggiunta. Le immagini binarie e le missioni esistenti restano invariate.
+
+## Galleria di immagini di esempio (v0.5.2)
+Nella scheda Steganografare scegliere una delle sei PNG statiche RGB/RGBA da 320 × 200 pixel oppure caricare un file dal PC. Le miniature caricano la copertura; Scarica PNG salva il file originale. Usare le immagini RGBA per esplorare il canale alfa.
