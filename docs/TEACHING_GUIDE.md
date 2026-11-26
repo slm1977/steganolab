@@ -30,7 +30,7 @@ Un piano mostra bianco=1 e nero=0; XOR mostra bianco=bit cambiato e nero=invaria
 - Immagine segreta: figura da nascondere; immagine steganografata: risultato.
 - Canale di inserimento e Posizione del bit: scelgono dove memorizzare l’informazione.
 - Rimuovi immagine originale: rimuove dal laboratorio, non dal disco.
-- Genera e scarica immagine steganografata: crea e salva il risultato PNG.
+- Genera anteprima: crea e salva il risultato PNG.
 
 I tooltip dei controlli forniscono spiegazioni contestuali al passaggio del puntatore.
 
@@ -53,10 +53,13 @@ Nella scheda Steganografare, dopo la generazione del testo o della figura binari
 Nel banco di analisi, Ctrl + rotellina ingrandisce o riduce attorno al puntatore; Shift + rotellina scorre orizzontalmente. La rotellina normale scorre le immagini confrontabili in sincronia. I riquadri mantengono un’altezza stabile al variare dello zoom.
 
 
-Editor multipiano: nella sezione Maschere dei piani di bit, Apri editor delle maschere di bit apre una matrice canale/bit (24 RGB, 32 RGBA). Clic per invertire un pixel, trascinamento per disegnare, Shift + trascinamento per spostare, zoom e griglia. Attivare i piani desiderati e salvare le maschere in memoria; Genera e scarica immagine steganografata sostituisce solo i piani attivi partendo dall’originale. Le maschere hanno le dimensioni dell’originale e vengono azzerate quando cambia. Esportazione PNG per singolo piano; le maschere si creano direttamente nell’editor.
+Editor multipiano: nella sezione Maschere dei piani di bit, Apri editor delle maschere di bit apre una matrice canale/bit (24 RGB, 32 RGBA). Clic per invertire un pixel, trascinamento per disegnare, Shift + trascinamento per spostare, zoom e griglia. Attivare i piani desiderati e salvare le maschere in memoria; Genera anteprima sostituisce solo i piani attivi partendo dall’originale. Le maschere hanno le dimensioni dell’originale e vengono azzerate quando cambia. Esportazione PNG per singolo piano; le maschere si creano direttamente nell’editor.
 
 
-Generazione unica: selezionare esplicitamente testo UTF-8 e/o maschere dell’editor, quindi usare Genera e scarica immagine steganografata. Il riepilogo indica i piani inclusi; i conflitti sullo stesso piano bloccano la generazione. Nell’editor Ctrl/Cmd+Z annulla, Ctrl+Y o Ctrl/Cmd+Shift+Z ripristina.
+Generazione unica: selezionare esplicitamente testo UTF-8 e/o maschere dell’editor, quindi usare Genera anteprima. Il riepilogo indica i piani inclusi; i conflitti sullo stesso piano bloccano la generazione. Nell’editor Ctrl/Cmd+Z annulla, Ctrl+Y o Ctrl/Cmd+Shift+Z ripristina.
 
 
 L’editor mostra le dimensioni della maschera, identiche all’originale, il numero totale di pixel e le coordinate X/Y e il bit sotto il puntatore. L’origine è (0,0) in alto a sinistra. La griglia è visibile da zoom 2×.
+
+
+Il campo Messaggio è multilinea. Il contatore mostra capacità, byte UTF-8 utilizzati e residui in funzione di canali, dimensioni e offset. Genera anteprima mostra il reperto senza scaricarlo; Scarica PNG steganografata salva l’ultima anteprima generata.
