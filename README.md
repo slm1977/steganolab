@@ -1,4 +1,4 @@
-# SteganoLab 0.5.2
+# SteganoLab 0.5.3
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -16,7 +16,7 @@ Apri <http://127.0.0.1:8000/> e interrompi il server con Ctrl+C. Non esporre il 
 2. Confronta le immagini, osserva Differenze e piani di bit, clicca un pixel e usa le frecce. Raccogli i bit della sospetta anche quando non sono cambiati, manualmente o con l'estrazione automatica; decodifica e annota osservazioni e ipotesi nella relazione.
 3. In **Steganografare** usa l'originale corrente, scegli una delle sei PNG di esempio oppure carica una copertura dal PC. Scegli canali, bit e scansione, inserisci un testo UTF-8 e genera la PNG; per una figura usa una PNG segreta delle stesse dimensioni. Ricarica il risultato per controllarlo. I controlli di visualizzazione, estrazione ed encoder sono indipendenti.
 
-La raccolta è limitata a 65.536 bit; la schermata ne mostra in anteprima i primi 512. La tabella ASCII e l'esploratore RGBA aiutano a interpretare valori e bit; l'esploratore è una simulazione e non modifica il reperto.
+La raccolta è limitata a 65.536 bit; la schermata ne mostra in anteprima i primi 512. La esploratore UTF-8 e l'esploratore RGBA aiutano a interpretare valori e bit; l'esploratore è una simulazione e non modifica il reperto.
 
 ## Formati e limiti
 
@@ -54,3 +54,6 @@ node tests/fixtures/browser-smoke.js
 Il test codec richiede anche ImageMagick `convert` nel PATH e le fixture PNG in [tests/fixtures](tests/fixtures); confronta l'output con un decoder indipendente. Il test UI richiede Google Chrome nel PATH; per Chromium o un altro percorso compatibile usa, ad esempio, `BROWSER=/usr/bin/chromium node tests/browser-ui.test.js`. Avvia un server loopback e un profilo temporanei, con scenari automatizzati nel browser. Lo smoke test richiede Firefox nel PATH e verifica il solo codec, non l'interfaccia. Nessuno richiede pacchetti npm.
 
 I test automatici non sostituiscono la verifica manuale nel browser: carica RGB e RGBA, ispeziona anche pixel trasparenti, genera e scarica un reperto, ricaricalo e controlla i valori; prova anche esportazione dei piani, navigazione e visualizzazione.
+
+
+L’Esploratore UTF-8 converte il testo in punti di codice Unicode e byte decimali, binari ed esadecimali, mostrando il totale di byte e bit. La tabella di riferimento comprende ASCII (0–127, un byte) e alcuni caratteri non ASCII. Un carattere visivo può comprendere più punti di codice.

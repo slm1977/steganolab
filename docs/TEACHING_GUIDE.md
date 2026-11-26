@@ -10,7 +10,7 @@ Aprire [il laboratorio](../index.html) e [la guida per studenti](../guide.html) 
 
 1. Avvia la prima missione; confronta originale e sospetta e formula un'ipotesi. La modalità **Caricamento manuale** permette invece di usare uno o entrambi i propri reperti; per confronto e XOR occorrono dimensioni uguali.
 2. Usa Differenze e ispeziona almeno cinque pixel, annotando coordinate e valori decimali e binari. Clicca un pixel e usa le frecce; zoom e griglia aiutano la lettura.
-3. Raccogli dalla sospetta i bit nell'ordine ipotizzato, anche nei canali invariati. Raggruppali in byte MSB-first, decodifica e giustifica la scelta; confronta raccolta manuale, estrazione automatica e tabella ASCII. Il riepilogo dei bit permette di comprimere o espandere l’elenco dei byte senza perdere dati. In caso di UTF-8 non valido, l’anteprima indicativa usa � per le sequenze non valide: verifica lunghezza e parametri.
+3. Raccogli dalla sospetta i bit nell'ordine ipotizzato, anche nei canali invariati. Raggruppali in byte MSB-first, decodifica e giustifica la scelta; confronta raccolta manuale, estrazione automatica e esploratore UTF-8. Il riepilogo dei bit permette di comprimere o espandere l’elenco dei byte senza perdere dati. In caso di UTF-8 non valido, l’anteprima indicativa usa � per le sequenze non valide: verifica lunghezza e parametri.
 4. Esplora le missioni successive: per le figure osserva i piani e scaricali; per le tracce usa XOR. Nella missione 007 formula e verifica ipotesi senza cercare la soluzione nel codice. Scrivi una relazione distinguendo osservazioni e inferenze.
 5. In **Steganografare** scegli un’immagine originale e crea un breve testo. Annota lunghezza e parametri, scarica e ricarica il reperto per verificarlo. Per una figura usa «Nascondi immagine in bianco e nero» e carica un’immagine segreta delle stesse dimensioni; esplora il piano scelto nel risultato.
 
@@ -40,5 +40,8 @@ Il tutor complementare può usare [le istruzioni dedicate](../agent/STEGANOLAB_A
 ## Offset testuale (v0.5.1)
 Coordinate X,Y intere, origine (0,0). Scansione per righe: indice y*w+x; per colonne: x*h+y. Capacità residua (w*h-indice)*numero canali. Encoder ed estrazione automatica usano lo stesso offset; raccolta manuale libera. Nessuna intestazione aggiunta. Le immagini binarie e le missioni esistenti restano invariate.
 
-## Galleria di immagini di esempio (v0.5.2)
+## Galleria di immagini di esempio (v0.5.3)
 Nella scheda Steganografare scegliere una delle sei PNG statiche RGB/RGBA da 320 × 200 pixel oppure caricare un file dal PC. Le miniature caricano la copertura; Scarica PNG salva il file originale. Usare le immagini RGBA per esplorare il canale alfa.
+
+
+L’Esploratore UTF-8 converte il testo in punti di codice Unicode e byte decimali, binari ed esadecimali, mostrando il totale di byte e bit. La tabella di riferimento comprende ASCII (0–127, un byte) e alcuni caratteri non ASCII. Un carattere visivo può comprendere più punti di codice.

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.3
+- Esploratore UTF-8 con conversione interattiva, punti di codice Unicode, byte decimali/binari/esadecimali e conteggi; riferimento ASCII e simboli comuni integrato.
+
 ## 0.5.2
 - Galleria di sei PNG statiche (tre RGB e tre RGBA, 320 × 200, 8 bit) in `images/examples/`, selezionabili e scaricabili nella scheda Steganografare.
 - Caricamento PNG dal PC invariato; aggiornate guida utente e base di conoscenza IA.
