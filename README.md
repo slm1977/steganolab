@@ -1,4 +1,4 @@
-# SteganoLab 0.6.4
+# SteganoLab 0.6.5
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -77,13 +77,16 @@ Nel banco di analisi, Ctrl + rotellina ingrandisce o riduce attorno al puntatore
 L’Esploratore UTF-8 si apre in una finestra ampia e ridimensionabile trascinando l’angolo inferiore destro; le tabelle restano scorrevoli.
 
 
-Editor multipiano: nella sezione Maschere dei piani di bit, Apri editor delle maschere di bit apre una matrice canale/bit (24 RGB, 32 RGBA). Clic per invertire un pixel, trascinamento per disegnare, Shift + trascinamento per spostare, zoom e griglia. Attivare i piani desiderati e salvare le maschere in memoria; Genera e scarica immagine steganografata sostituisce solo i piani attivi partendo dall’originale. Le maschere hanno le dimensioni dell’originale e vengono azzerate quando cambia. Esportazione PNG per singolo piano; le maschere si creano direttamente nell’editor.
+Editor multipiano: nella sezione Maschere dei piani di bit, Apri editor delle maschere di bit apre una matrice canale/bit (24 RGB, 32 RGBA). Clic per invertire un pixel, trascinamento per disegnare, Shift + trascinamento per spostare, zoom e griglia. Attivare i piani desiderati e salvare le maschere in memoria; Genera anteprima sostituisce solo i piani attivi partendo dall’originale. Le maschere hanno le dimensioni dell’originale e vengono azzerate quando cambia. Esportazione PNG per singolo piano; le maschere si creano direttamente nell’editor.
 
 
-Generazione unica: selezionare esplicitamente testo UTF-8 e/o maschere dell’editor, quindi usare Genera e scarica immagine steganografata. Il riepilogo indica i piani inclusi; i conflitti sullo stesso piano bloccano la generazione. Nell’editor Ctrl/Cmd+Z annulla, Ctrl+Y o Ctrl/Cmd+Shift+Z ripristina.
+Generazione unica: selezionare esplicitamente testo UTF-8 e/o maschere dell’editor, quindi usare Genera anteprima. Il riepilogo indica i piani inclusi; i conflitti sullo stesso piano bloccano la generazione. Nell’editor Ctrl/Cmd+Z annulla, Ctrl+Y o Ctrl/Cmd+Shift+Z ripristina.
 
 
 Il laboratorio Encoder si attiva dopo il caricamento di una PNG originale dal PC o dalla galleria. Le immagini sintetiche delle missioni non attivano l’encoder. Le informazioni tecniche delle immagini sono consultabili espandendo Informazioni immagine.
 
 
 L’editor mostra le dimensioni della maschera, identiche all’originale, il numero totale di pixel e le coordinate X/Y e il bit sotto il puntatore. L’origine è (0,0) in alto a sinistra. La griglia è visibile da zoom 2×.
+
+
+Il campo Messaggio è multilinea. Il contatore mostra capacità, byte UTF-8 utilizzati e residui in funzione di canali, dimensioni e offset. Genera anteprima mostra il reperto senza scaricarlo; Scarica PNG steganografata salva l’ultima anteprima generata.
