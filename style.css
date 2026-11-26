@@ -8,3 +8,5 @@ header{padding-bottom:.5rem}.toolbar{display:flex;justify-content:space-between;
 .offsetfields{margin:10px 0;padding:8px;border:1px solid #526575}.offsetfields input{width:85px}.offsetfields p{color:#ffd166;margin:4px 0}.coverchecker{position:relative}.offsetmarker{position:absolute;pointer-events:none;outline:2px solid #ffbf47;z-index:3;box-sizing:border-box}.offsetmarker[hidden]{display:none}
 
 #encoder .encoder-previews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;align-items:start} .encoder-previews>div{min-width:0} .encoder-previews h3{margin:.5rem 0} #coverpreview,#resultpreview{display:block;max-width:100%;max-height:350px;width:auto;height:auto;object-fit:contain} #coverpreview[hidden],#resultpreview[hidden]{display:none} .encoder-previews .coverchecker{max-width:100%;width:fit-content} @media(max-width:480px){#encoder .encoder-previews{grid-template-columns:1fr}}
+
+#analysis .viewport canvas.can-pan{cursor:grab}#analysis .viewport canvas.panning{cursor:grabbing;user-select:none}#analysis .viewport canvas{touch-action:none}

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.6
+- Pan mediante trascinamento del mouse sulle immagini ingrandite, cursori grab/grabbing e sincronizzazione delle immagini confrontabili. Il clic breve continua a selezionare il pixel.
+
 ## 0.5.5
 - Anteprime affiancate dell’originale e del reperto generato, sia per testo sia per figura binaria; risultato invalidato al cambio dell’originale o del reperto.
 

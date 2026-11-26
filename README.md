@@ -1,4 +1,4 @@
-# SteganoLab 0.5.5
+# SteganoLab 0.5.6
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -66,3 +66,6 @@ SteganoLab è stato realizzato esclusivamente a fini didattici ed educativi.
 
 
 Nella scheda Steganografare, dopo la generazione del testo o della figura binaria, l’anteprima del reperto compare accanto all’originale alla stessa scala. Sostituire l’originale o il reperto azzera l’anteprima. Su schermi molto stretti le immagini sono impilate.
+
+
+Nel banco di analisi, trascina con il mouse un’immagine ingrandita per spostare la vista; se originale e sospetta sono confrontabili, lo spostamento è sincronizzato. Un clic breve continua a selezionare il pixel.

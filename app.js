@@ -186,8 +186,23 @@ for(const p of ['encoff','extoff']){for(const axis of ['x','y'])$(p+axis).oninpu
 for(const id of ['scan','encscan'])$(id).oninput=()=>{updateControls();mark();};
 $('coverpreview').onclick=e=>{if(!original)return;const r=e.currentTarget.getBoundingClientRect();if(!r.width||!r.height)return;selected=[Math.min(original.width-1,Math.max(0,Math.floor((e.clientX-r.left)*original.width/r.width))),Math.min(original.height-1,Math.max(0,Math.floor((e.clientY-r.top)*original.height/r.height)))];setOffset('encoff',...selected);};
 $('zoom').oninput = () => { autoFit = false; zoom = Math.exp(Number($('zoom').value)); render(); }; $('fit').onclick = () => { autoFit = true; render(); }; window.addEventListener('resize', () => { if (autoFit) render(); });
+
+const panSuppressed = new WeakSet();
+const panCanvases = [canvas, reference];
+const panViewport = c => c.parentElement.parentElement;
+function canPan(c){const v=panViewport(c);return !c.parentElement.hidden&&(v.scrollWidth>v.clientWidth+1||v.scrollHeight>v.clientHeight+1);}
+function syncPan(c){if(!comparable())return;const from=panViewport(c),other=panViewport(c===canvas?reference:canvas);if(other===from)return;if(Math.abs(other.scrollLeft-from.scrollLeft)>1)other.scrollLeft=from.scrollLeft;if(Math.abs(other.scrollTop-from.scrollTop)>1)other.scrollTop=from.scrollTop;}
+for(const c of panCanvases){
+ const vp=panViewport(c);let drag=null;
+ c.addEventListener('pointerenter',()=>{c.classList.toggle('can-pan',canPan(c));});
+ c.addEventListener('pointerdown',e=>{panSuppressed.delete(c);if(e.button!==0||!canPan(c))return;drag={id:e.pointerId,x:e.clientX,y:e.clientY,left:vp.scrollLeft,top:vp.scrollTop,moved:false};});
+ c.addEventListener('pointermove',e=>{c.classList.toggle('can-pan',canPan(c));if(!drag||drag.id!==e.pointerId)return;if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<4)return;if(!drag.moved){drag.moved=true;c.setPointerCapture(e.pointerId);c.classList.add('panning');}vp.scrollLeft=drag.left-(e.clientX-drag.x);vp.scrollTop=drag.top-(e.clientY-drag.y);syncPan(c);e.preventDefault();});
+ const end=e=>{if(!drag||drag.id!==e.pointerId)return;if(drag.moved)panSuppressed.add(c);drag=null;c.classList.remove('panning');if(c.hasPointerCapture(e.pointerId))c.releasePointerCapture(e.pointerId);};
+ c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end);c.addEventListener('lostpointercapture',end);
+ c.addEventListener('pointerleave',()=>{if(drag&&!drag.moved)drag=null;});
+}
 for (const c of [canvas, reference]) {
-  c.onclick = e => { c.focus({preventScroll: true}); if (c === reference && original && suspect && !comparable() && $('view').value !== 'original') { $('view').value = 'original'; render(); } const r = c.getBoundingClientRect(); if (r.width && r.height) inspect(Math.floor((e.clientX - r.left) * c.width / r.width), Math.floor((e.clientY - r.top) * c.height / r.height)); };
+  c.onclick = e => { if (panSuppressed.has(c)) { panSuppressed.delete(c); return; } c.focus({preventScroll: true}); if (c === reference && original && suspect && !comparable() && $('view').value !== 'original') { $('view').value = 'original'; render(); } const r = c.getBoundingClientRect(); if (r.width && r.height) inspect(Math.floor((e.clientX - r.left) * c.width / r.width), Math.floor((e.clientY - r.top) * c.height / r.height)); };
   c.onkeydown = e => { const d = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1]}[e.key], base = current(); if (!d || !base) return; e.preventDefault(); inspect(...C.move(...selected, ...d, base.width, base.height));
     for (const v of [canvas, reference]) { if (v.parentElement.hidden) continue; const vp = v.parentElement.parentElement, x = selected[0] * zoom, y = selected[1] * zoom; if (x < vp.scrollLeft) vp.scrollLeft = x; else if (x + zoom > vp.scrollLeft + vp.clientWidth) vp.scrollLeft = x + zoom - vp.clientWidth; if (y < vp.scrollTop) vp.scrollTop = y; else if (y + zoom > vp.scrollTop + vp.clientHeight) vp.scrollTop = y + zoom - vp.clientHeight; }
   };
