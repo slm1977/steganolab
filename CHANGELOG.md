@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.0
+- Editor multipiano di maschere binarie: 24 piani RGB o 32 RGBA, attivazione indipendente, disegno, import/export PNG e generazione simultanea.
+
 ## 0.5.8
 - Esploratore UTF-8 più ampio, ridimensionabile, con campo testo a tutta larghezza e tabelle scorrevoli.
 

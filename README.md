@@ -1,4 +1,4 @@
-# SteganoLab 0.5.8
+# SteganoLab 0.6.0
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -75,3 +75,6 @@ Nel banco di analisi, Ctrl + rotellina ingrandisce o riduce attorno al puntatore
 
 
 L’Esploratore UTF-8 si apre in una finestra ampia e ridimensionabile trascinando l’angolo inferiore destro; le tabelle restano scorrevoli.
+
+
+Editor multipiano: nella sezione Nascondi immagine in bianco e nero, Crea o modifica maschere apre una matrice canale/bit (24 RGB, 32 RGBA). Clic per invertire un pixel, trascinamento per disegnare, Shift + trascinamento per spostare, zoom e griglia. Attivare i piani desiderati e salvare le maschere in memoria; Genera PNG con tutte le maschere attive sostituisce solo i piani attivi partendo dall’originale. Le maschere hanno le dimensioni dell’originale e vengono azzerate quando cambia. Importazione/esportazione PNG per singolo piano; il caricamento singolo precedente resta disponibile.
