@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5
+- Messaggio multilinea e contatore dinamico dei byte UTF-8 residui.
+- Generazione anteprima senza download; salvataggio PNG separato.
+
 ## 0.6.4
 - Editor maschere: dimensioni reali, numero di pixel e coordinate/bit del puntatore in tempo reale; griglia visibile da zoom 2×.
 
