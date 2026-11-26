@@ -117,8 +117,11 @@ function updateControls() {
     updateSelect(id, [...preferred, ...all.filter(v => !preferred.includes(v))], 'RGB', label);
   }
   $('extract').disabled = !suspect; $('encode').disabled = !original; $('analysecreated').disabled = !(generatedPair && generatedPair.original === original && generatedPair.result === suspect);
+  $('downloadcreated').disabled = $('analysecreated').disabled;
   const encBits = offsetCapacity('encoff',original,$('encscan').value,$('encorder').value), bytes = new TextEncoder().encode($('message').value).length;
-  $('capacity').textContent = `Capacità: ${encBits} bit · ${Math.floor(encBits / 8)} byte UTF-8; messaggio: ${bytes * 8} bit · ${bytes} byte${bytes * 8 > encBits ? ' (oltre la capacità)' : ''}.${original && !original.hasAlpha ? ' RGB non dispone di A: non viene convertito in RGBA.' : ''}`;
+  const maxBytes=Math.floor(encBits/8), remaining=maxBytes-bytes;
+  $('capacity').textContent = `Capacità: ${maxBytes.toLocaleString('it-IT')} byte · Utilizzati: ${bytes.toLocaleString('it-IT')} byte · ${remaining>=0?'Ancora disponibili: '+remaining.toLocaleString('it-IT'):'Capacità superata di '+(-remaining).toLocaleString('it-IT')} byte`;
+  $('capacity').classList.toggle('overcapacity',remaining<0);
   const n = offsetCapacity('extoff',suspect,$('scan').value,$('order').value); $('extractcapacity').textContent = `Capacità: ${n} bit · ${Math.floor(n / 8)} byte completi. Raccolta automatica: massimo 65536 bit.`;
   refreshGeneration(); $('extract').disabled=!suspect||!n; $('extoffpick').disabled=!suspect; $('encoffpick').disabled=!original; markOffset();
 }
@@ -229,7 +232,7 @@ $('undo').onclick = () => { bits = bits.slice(0, -1); bitSources.pop(); showBits
 $('extract').onclick = () => { try { if (!suspect) throw Error('Carica una sospetta'); const n = Number($('count').value); if (!Number.isInteger(n) || n < 1 || n > 65536) throw Error('Limite: 1–65536 bit'); bits = C.extract(suspect.data, suspect.width, suspect.height, $('order').value, $('scan').value, Number($('extractbit').value), n, suspect.hasAlpha,...offset('extoff',suspect,$('scan').value)); bitSources = []; for (const p of C.positions(suspect.width, suspect.height, $('order').value, $('scan').value, suspect.hasAlpha,...offset('extoff',suspect,$('scan').value))) { if (bitSources.length === n) break; const pixel = Math.floor(p / 4); bitSources.push({x:pixel % suspect.width,y:Math.floor(pixel / suspect.width),channel:'RGBA'[p % 4],bit:Number($('extractbit').value)}); } showBits(); } catch (e) { say(e.message); } };
 $('decode').onclick = () => { try { $('decoded').textContent = C.decode(bits); } catch (e) { if (bits.length % 8) { $('decoded').textContent = 'Servono gruppi completi di 8 bit. Bit residui: ' + (bits.length % 8) + '.'; return; } const bytes = Uint8Array.from(bits.match(/.{8}/g) || [], s => parseInt(s, 2)); const preview = new TextDecoder('utf-8').decode(bytes); $('decoded').textContent = 'Sequenza UTF-8 non valida. Verifica numero di bit, ordine dei canali, posizione del bit, offset e scansione.\nAnteprima indicativa (� = sequenza non valida): ' + preview; } };
 function created(data, name) {
-  const result = artifact(data, original.width, original.height, original.hasAlpha, name), png = PngCodec.encode(result); invalidate('suspect'); suspect = result; generatedPair = {original, result}; setMode('manual', true); $('brief').textContent = 'Reperto creato nel laboratorio.'; $('view').value = 'suspect'; state('suspect', 'Generato: ' + describe(result)); autoFit = true; render(); download(new Blob([png], {type: 'image/png'}), name); say('Immagine steganografata generata nel formato dell’originale.');
+  const result = artifact(data, original.width, original.height, original.hasAlpha, name); invalidate('suspect'); suspect = result; generatedPair = {original, result}; setMode('manual', true); $('brief').textContent = 'Reperto creato nel laboratorio.'; $('view').value = 'suspect'; state('suspect', 'Generato: ' + describe(result)); autoFit = true; render(); say('Anteprima generata. Puoi scaricare il PNG quando vuoi.');
 }
 
 
@@ -251,6 +254,7 @@ $('load').onclick = () => {
 };
 function switchTab(index) { tabs.forEach((tab, i) => { tab.setAttribute('aria-selected', String(i === index)); tab.tabIndex = i === index ? 0 : -1; panels[i].hidden = i !== index; }); render(); }
 tabs.forEach((tab, i) => { tab.onclick = () => switchTab(i); tab.onkeydown = e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); const next = 1 - i; switchTab(next); tabs[next].focus(); } }; });
+$('downloadcreated').onclick = () => { if(generatedPair && generatedPair.original===original && generatedPair.result===suspect) downloadPng(generatedPair.result,'reperto.png'); };
 $('analysecreated').onclick = () => { if (!generatedPair || generatedPair.original !== original || generatedPair.result !== suspect) { say('Genera prima un reperto'); return; } setMode('manual', true); switchTab(0); $('view').value = 'suspect'; render(); tabs[0].focus(); };
 const controls = 'NUL SOH STX ETX EOT ENQ ACK BEL BS HT LF VT FF CR SO SI DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM SUB ESC FS GS RS US'.split(' '), ascii = $('ascii');
 const utfEncoder=new TextEncoder();
