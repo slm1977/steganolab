@@ -57,3 +57,6 @@ Editor multipiano: nella sezione Maschere dei piani di bit, Apri editor delle ma
 
 
 Generazione unica: selezionare esplicitamente testo UTF-8 e/o maschere dell’editor, quindi usare Genera e scarica immagine steganografata. Il riepilogo indica i piani inclusi; i conflitti sullo stesso piano bloccano la generazione. Nell’editor Ctrl/Cmd+Z annulla, Ctrl+Y o Ctrl/Cmd+Shift+Z ripristina.
+
+
+L’editor mostra le dimensioni della maschera, identiche all’originale, il numero totale di pixel e le coordinate X/Y e il bit sotto il puntatore. L’origine è (0,0) in alto a sinistra. La griglia è visibile da zoom 2×.

@@ -1,4 +1,4 @@
-# SteganoLab 0.6.3
+# SteganoLab 0.6.4
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -84,3 +84,6 @@ Generazione unica: selezionare esplicitamente testo UTF-8 e/o maschere dell’ed
 
 
 Il laboratorio Encoder si attiva dopo il caricamento di una PNG originale dal PC o dalla galleria. Le immagini sintetiche delle missioni non attivano l’encoder. Le informazioni tecniche delle immagini sono consultabili espandendo Informazioni immagine.
+
+
+L’editor mostra le dimensioni della maschera, identiche all’originale, il numero totale di pixel e le coordinate X/Y e il bit sotto il puntatore. L’origine è (0,0) in alto a sinistra. La griglia è visibile da zoom 2×.

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.4
+- Editor maschere: dimensioni reali, numero di pixel e coordinate/bit del puntatore in tempo reale; griglia visibile da zoom 2×.
+
 ## 0.6.3
 - Encoder disabilitato fino al caricamento di una PNG originale manuale o di esempio; informazioni delle immagini richiudibili.
 
