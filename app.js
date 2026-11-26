@@ -277,7 +277,24 @@ $('load').onclick = () => {
 };
 function switchTab(index) { tabs.forEach((tab, i) => { tab.setAttribute('aria-selected', String(i === index)); tab.tabIndex = i === index ? 0 : -1; panels[i].hidden = i !== index; }); render(); }
 tabs.forEach((tab, i) => { tab.onclick = () => switchTab(i); tab.onkeydown = e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); const next = 1 - i; switchTab(next); tabs[next].focus(); } }; });
-$('downloadcreated').onclick = () => { if(generatedPair && generatedPair.original===original && generatedPair.result===suspect) downloadPng(generatedPair.result,'reperto.png'); };
+$('downloadcreated').onclick = async () => {
+  if(!generatedPair || generatedPair.original!==original || generatedPair.result!==suspect) return;
+  const item=generatedPair.result;
+  try {
+    if(typeof window.showSaveFilePicker==='function'){
+      try {
+        const handle=await window.showSaveFilePicker({suggestedName:'reperto.png',types:[{description:'Immagine PNG',accept:{'image/png':['.png']}}],excludeAcceptAllOption:true});
+        const blob=new Blob([PngCodec.encode(item)],{type:'image/png'});
+        const stream=await handle.createWritable();await stream.write(blob);await stream.close();return;
+      } catch(e){if(e.name==='AbortError')return;if(e.name!=='SecurityError'&&e.name!=='NotAllowedError')throw e;}
+    }
+    const input=window.prompt('Nome del file PNG da scaricare:', 'reperto.png');
+    if(input===null)return;
+    const name=input.trim().replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').replace(/\.png$/i,'').trim();
+    if(!name){say('Inserisci un nome valido per il file.');return;}
+    downloadPng(item,name+'.png');
+  }catch(e){say('Salvataggio non riuscito: '+e.message);}
+};
 $('analysecreated').onclick = () => { if (!generatedPair || generatedPair.original !== original || generatedPair.result !== suspect) { say('Genera prima un reperto'); return; } setMode('manual', true); switchTab(0); $('view').value = 'suspect'; render(); tabs[0].focus(); };
 const controls = 'NUL SOH STX ETX EOT ENQ ACK BEL BS HT LF VT FF CR SO SI DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM SUB ESC FS GS RS US'.split(' '), ascii = $('ascii');
 const utfEncoder=new TextEncoder();
