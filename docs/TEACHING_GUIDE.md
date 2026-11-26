@@ -45,3 +45,6 @@ Nella scheda Steganografare scegliere una delle sei PNG statiche RGB/RGBA da 320
 
 
 L’Esploratore UTF-8 converte il testo in punti di codice Unicode e byte decimali, binari ed esadecimali, mostrando il totale di byte e bit. La tabella di riferimento comprende ASCII (0–127, un byte) e alcuni caratteri non ASCII. Un carattere visivo può comprendere più punti di codice.
+
+
+Nella scheda Steganografare, dopo la generazione del testo o della figura binaria, l’anteprima del reperto compare accanto all’originale alla stessa scala. Sostituire l’originale o il reperto azzera l’anteprima. Su schermi molto stretti le immagini sono impilate.

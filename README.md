@@ -1,4 +1,4 @@
-# SteganoLab 0.5.4
+# SteganoLab 0.5.5
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -63,3 +63,6 @@ L’Esploratore UTF-8 converte il testo in punti di codice Unicode e byte decima
 **Autore:** Stefano Leone Monni. **Licenza:** [MIT](LICENSE).
 
 SteganoLab è stato realizzato esclusivamente a fini didattici ed educativi.
+
+
+Nella scheda Steganografare, dopo la generazione del testo o della figura binaria, l’anteprima del reperto compare accanto all’originale alla stessa scala. Sostituire l’originale o il reperto azzera l’anteprima. Su schermi molto stretti le immagini sono impilate.

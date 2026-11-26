@@ -1,6 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const C = Stegano, canvas = $('canvas'), reference = $('reference');
+let generatedPair = null;
 let original = null, suspect = null, mask = null, bits = '', selected = [0, 0];
 let bitSources = [];
 let mode = 'mission', step = 0, autoFit = true, zoom = 1, planeBuffer = null;
@@ -40,15 +41,15 @@ function setMode(next, preserve = false) {
   invalidate('original', 'suspect'); mode = next;
   document.querySelector(`input[name="mode"][value="${next}"]`).checked = true;
   $('missioncontrols').hidden = next !== 'mission'; $('manualcontrols').hidden = next !== 'manual';
-  if (!preserve) { original = null; suspect = null; state('original', 'Nessun file selezionato.'); state('suspect', 'Nessun file selezionato.'); state('cover', 'Nessuna immagine originale caricata.'); $('brief').textContent = next === 'manual' ? 'Carica uno o entrambi i reperti.' : 'Scegli e avvia una missione.'; }
+  if (!preserve) { generatedPair = null; original = null; suspect = null; state('original', 'Nessun file selezionato.'); state('suspect', 'Nessun file selezionato.'); state('cover', 'Nessuna immagine originale caricata.'); $('brief').textContent = next === 'manual' ? 'Carica uno o entrambi i reperti.' : 'Scegli e avvia una missione.'; }
   else { state('original', original ? describe(original) : 'Nessun originale.'); state('suspect', suspect ? describe(suspect) : 'Nessuna sospetta.'); }
   reset(); autoFit = true; say(''); render();
 }
 document.querySelectorAll('input[name="mode"]').forEach(r => r.onchange = () => setMode(r.value));
 async function loadFile(id, slot, file) {
   if (!file) return; const token = ++generation[slot], stateId = id === 'coverfile' ? 'cover' : id === 'maskfile' ? 'mask' : id;
-  if (slot === 'original') { original = null; state(id === 'coverfile' ? 'original' : 'cover', 'Nessuna immagine originale caricata.'); if (id === 'coverfile') { invalidate('suspect'); suspect = null; state('suspect', 'Nessuna sospetta.'); } }
-  else if (slot === 'suspect') suspect = null; else mask = null;
+  if (slot === 'original') { generatedPair = null; original = null; state(id === 'coverfile' ? 'original' : 'cover', 'Nessuna immagine originale caricata.'); if (id === 'coverfile') { invalidate('suspect'); suspect = null; state('suspect', 'Nessuna sospetta.'); } }
+  else if (slot === 'suspect') { generatedPair = null; suspect = null; } else mask = null;
   state(stateId, `Caricamento: ${file.name}…`);
   if (slot !== 'mask') { reset(); autoFit = true; $('brief').textContent = mode === 'manual' ? 'Reperti caricati manualmente.' : 'Immagine originale caricata nel laboratorio.'; }
   say(''); render();
@@ -84,8 +85,9 @@ for(let k=0;k<exampleNames.length;k++){
 }
 
 function clearSlot(slot) {
+  if (slot === 'original' || slot === 'suspect') generatedPair = null;
   invalidate(slot);
-  if (slot === 'original') { original = null; state('original', 'Nessun file selezionato.'); state('cover', 'Nessuna immagine originale caricata.'); }
+  if (slot === 'original') { generatedPair = null; original = null; state('original', 'Nessun file selezionato.'); state('cover', 'Nessuna immagine originale caricata.'); }
   else if (slot === 'suspect') { suspect = null; state('suspect', 'Nessun file selezionato.'); } else { mask = null; state('mask', 'Nessun file selezionato.'); }
   if (slot !== 'mask') { reset(); autoFit = true; } say(''); render();
 }
@@ -112,7 +114,7 @@ function updateControls() {
     const all = permutations(item?.hasAlpha ? 'RGBA' : 'RGB'), preferred = ['RGB', 'R', 'G', 'B', 'BGR', 'RG', 'RB', 'GB', 'A', 'RGBA'].filter(v => all.includes(v));
     updateSelect(id, [...preferred, ...all.filter(v => !preferred.includes(v))], 'RGB', label);
   }
-  $('extract').disabled = !suspect; $('encode').disabled = !original; $('hidemask').disabled = !original || !mask; $('analysecreated').disabled = !suspect;
+  $('extract').disabled = !suspect; $('encode').disabled = !original; $('hidemask').disabled = !original || !mask; $('analysecreated').disabled = !(generatedPair && generatedPair.original === original && generatedPair.result === suspect);
   const encBits = offsetCapacity('encoff',original,$('encscan').value,$('encorder').value), bytes = new TextEncoder().encode($('message').value).length;
   $('capacity').textContent = `Capacità: ${encBits} bit · ${Math.floor(encBits / 8)} byte UTF-8; messaggio: ${bytes * 8} bit · ${bytes} byte${bytes * 8 > encBits ? ' (oltre la capacità)' : ''}.${original && !original.hasAlpha ? ' RGB non dispone di A: non viene convertito in RGBA.' : ''}`;
   const n = offsetCapacity('extoff',suspect,$('scan').value,$('order').value); $('extractcapacity').textContent = `Capacità: ${n} bit · ${Math.floor(n / 8)} byte completi. Raccolta automatica: massimo 65536 bit.`;
@@ -154,6 +156,11 @@ function render() {
   const preview = $('coverpreview'); preview.hidden = !original; $('coverinfo').textContent = original ? describe(original) : 'Nessuna immagine originale caricata.';
   if (original) { preview.width = original.width; preview.height = original.height; preview.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(original.data), original.width, original.height), 0, 0); }
   else { preview.width = 1; preview.height = 1; preview.getContext('2d').clearRect(0, 0, 1, 1); }
+  const result = generatedPair && generatedPair.original === original && generatedPair.result === suspect ? suspect : null;
+  const resultPreview = $('resultpreview'); resultPreview.hidden = !result;
+  $('resultinfo').textContent = result ? describe(result) : 'Nessuna immagine steganografata.';
+  if (result) { resultPreview.width = result.width; resultPreview.height = result.height; resultPreview.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(result.data), result.width, result.height), 0, 0); }
+  else { resultPreview.width = 1; resultPreview.height = 1; }
   if (paired) { const d = C.diff(original.data, suspect.data, original.hasAlpha, suspect.hasAlpha); $('stats').textContent = `${d.pixels} pixel alterati su ${original.width * original.height} · ${d.values} valori alterati · variazione massima ${d.max} · ${Object.entries(d.channels).map(([c, n]) => `${c}: ${n}`).join(' · ')}${d.formatsDiffer ? ' · Formati diversi: confronto solo RGB; XOR A non disponibile.' : ''}`; }
   else $('stats').textContent = original && suspect ? 'Dimensioni diverse: confronto e XOR non disponibili.' : base ? `${base.width} × ${base.height} pixel · ${base.hasAlpha ? 32 : 24} piani` : 'Nessun reperto disponibile.';
   if (base) { selected = C.move(selected[0], selected[1], 0, 0, base.width, base.height); inspect(...selected); } else { $('pixel').replaceChildren(); $('x').value = 0; $('y').value = 0; mark(); }
@@ -191,7 +198,7 @@ $('undo').onclick = () => { bits = bits.slice(0, -1); bitSources.pop(); showBits
 $('extract').onclick = () => { try { if (!suspect) throw Error('Carica una sospetta'); const n = Number($('count').value); if (!Number.isInteger(n) || n < 1 || n > 65536) throw Error('Limite: 1–65536 bit'); bits = C.extract(suspect.data, suspect.width, suspect.height, $('order').value, $('scan').value, Number($('extractbit').value), n, suspect.hasAlpha,...offset('extoff',suspect,$('scan').value)); bitSources = []; for (const p of C.positions(suspect.width, suspect.height, $('order').value, $('scan').value, suspect.hasAlpha,...offset('extoff',suspect,$('scan').value))) { if (bitSources.length === n) break; const pixel = Math.floor(p / 4); bitSources.push({x:pixel % suspect.width,y:Math.floor(pixel / suspect.width),channel:'RGBA'[p % 4],bit:Number($('extractbit').value)}); } showBits(); } catch (e) { say(e.message); } };
 $('decode').onclick = () => { try { $('decoded').textContent = C.decode(bits); } catch (e) { if (bits.length % 8) { $('decoded').textContent = 'Servono gruppi completi di 8 bit. Bit residui: ' + (bits.length % 8) + '.'; return; } const bytes = Uint8Array.from(bits.match(/.{8}/g) || [], s => parseInt(s, 2)); const preview = new TextDecoder('utf-8').decode(bytes); $('decoded').textContent = 'Sequenza UTF-8 non valida. Verifica numero di bit, ordine dei canali, posizione del bit, offset e scansione.\nAnteprima indicativa (� = sequenza non valida): ' + preview; } };
 function created(data, name) {
-  const result = artifact(data, original.width, original.height, original.hasAlpha, name), png = PngCodec.encode(result); invalidate('suspect'); suspect = result; setMode('manual', true); $('brief').textContent = 'Reperto creato nel laboratorio.'; $('view').value = 'suspect'; state('suspect', 'Generato: ' + describe(result)); autoFit = true; render(); download(new Blob([png], {type: 'image/png'}), name); say('Immagine steganografata generata nel formato dell’originale.');
+  const result = artifact(data, original.width, original.height, original.hasAlpha, name), png = PngCodec.encode(result); invalidate('suspect'); suspect = result; generatedPair = {original, result}; setMode('manual', true); $('brief').textContent = 'Reperto creato nel laboratorio.'; $('view').value = 'suspect'; state('suspect', 'Generato: ' + describe(result)); autoFit = true; render(); download(new Blob([png], {type: 'image/png'}), name); say('Immagine steganografata generata nel formato dell’originale.');
 }
 $('encode').onclick = () => { try { if (!original) throw Error('Carica un’immagine originale'); if (!$('message').value) throw Error('Inserisci un messaggio'); created(C.encode(original.data, original.width, original.height, $('encorder').value, $('encscan').value, Number($('encbit').value), $('message').value, original.hasAlpha,...offset('encoff',original,$('encscan').value)), 'reperto.png'); } catch (e) { say(e.message); } };
 $('hidemask').onclick = () => { try { if (!original || !mask) throw Error('Carica l’immagine originale e l’immagine segreta'); if (mask.width !== original.width || mask.height !== original.height) throw Error('La PNG segreta deve avere le stesse dimensioni dell’immagine originale'); created(C.hideMask(original.data, mask.data, $('maskchannel').value, Number($('maskbit').value), original.hasAlpha), 'reperto-immagine.png'); } catch (e) { say(e.message); } };
@@ -213,7 +220,7 @@ $('load').onclick = () => {
 };
 function switchTab(index) { tabs.forEach((tab, i) => { tab.setAttribute('aria-selected', String(i === index)); tab.tabIndex = i === index ? 0 : -1; panels[i].hidden = i !== index; }); render(); }
 tabs.forEach((tab, i) => { tab.onclick = () => switchTab(i); tab.onkeydown = e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); const next = 1 - i; switchTab(next); tabs[next].focus(); } }; });
-$('analysecreated').onclick = () => { if (!suspect) { say('Genera prima un reperto'); return; } setMode('manual', true); switchTab(0); $('view').value = 'suspect'; render(); tabs[0].focus(); };
+$('analysecreated').onclick = () => { if (!generatedPair || generatedPair.original !== original || generatedPair.result !== suspect) { say('Genera prima un reperto'); return; } setMode('manual', true); switchTab(0); $('view').value = 'suspect'; render(); tabs[0].focus(); };
 const controls = 'NUL SOH STX ETX EOT ENQ ACK BEL BS HT LF VT FF CR SO SI DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM SUB ESC FS GS RS US'.split(' '), ascii = $('ascii');
 const utfEncoder=new TextEncoder();
 function utfValues(ch){const cp=ch.codePointAt(0),bytes=Array.from(utfEncoder.encode(ch));return [cp<32?controls[cp]:cp===32?'SP (spazio)':cp===127?'DEL':ch,'U+'+cp.toString(16).toUpperCase().padStart(4,'0'),bytes.join(' '),bytes.map(b=>b.toString(2).padStart(8,'0')).join(' '),bytes.map(b=>b.toString(16).toUpperCase().padStart(2,'0')).join(' ')];}

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.5
+- Anteprime affiancate dell’originale e del reperto generato, sia per testo sia per figura binaria; risultato invalidato al cambio dell’originale o del reperto.
+
 ## 0.5.4
 - Sezione Credits con autore, licenza MIT e finalità didattiche ed educative; allineata l’attribuzione nel file LICENSE.
 
