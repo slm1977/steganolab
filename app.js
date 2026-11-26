@@ -9,7 +9,7 @@ const generation = {original: 0, suspect: 0, mask: 0};
 const tabs = [$('tab-analysis'), $('tab-encoder')], panels = [$('analysis'), $('encoder')];
 const say = text => { $('status').textContent = text; $('encstatus').textContent = text; };
 const comparable = () => !!(original && suspect && original.width === suspect.width && original.height === suspect.height);
-const current = () => $('view').value === 'original' && original ? original : suspect || original;
+const current = () => !comparable() && $('analysisSource').value === 'original' && original ? original : suspect || original;
 function artifact(data, width, height, hasAlpha, name) {
   let hasTransparency = false;
   if (hasAlpha) for (let i = 3; i < data.length; i += 4) if (data[i] !== 255) { hasTransparency = true; break; }
@@ -108,10 +108,18 @@ function updateControls() {
   refreshMaskOwner();
   const ready=!!original && mode==='manual'; $('encoderfields').disabled=!ready; $('encoderlock').hidden=ready; $('encoderpanel').classList.toggle('encoder-locked',!ready);
   const paired = comparable();
-  for (const opt of $('view').options) opt.disabled = opt.value === 'original' ? !original : opt.value === 'suspect' ? !suspect : opt.value === 'diff' || opt.value === 'xor' ? !paired : !original && !suspect;
-  if ($('view').selectedOptions[0].disabled) $('view').value = suspect ? 'suspect' : original ? 'original' : 'suspect';
-  const planeImage = suspect || original, alphaView = !!(planeImage?.hasAlpha && ($('view').value !== 'xor' || original?.hasAlpha));
-  updateSelect('channel', [...(alphaView ? 'RGBA' : 'RGB')], 'R', 'Visualizzazione');
+  const any=!!(original||suspect), source=$('analysisSource');
+  source.options[0].disabled=!suspect;source.options[1].disabled=!original;
+  if(source.selectedOptions[0].disabled)source.value=suspect?'suspect':'original';
+  $('singleSource').hidden=paired||!original||!suspect;
+  if($('view').value==='original'){$('view').value='suspect';if(!paired&&original)source.value='original';}
+  if(!paired&&['diff','xor'].includes($('view').value))$('view').value='suspect';
+  for(const btn of document.querySelectorAll('#analysisviews button')){btn.disabled=!any||(!paired&&['diff','xor'].includes(btn.dataset.view));btn.setAttribute('aria-pressed',String(btn.dataset.view===$('view').value));}
+  $('referencepanel').hidden=!paired;
+  $('analysiscomparison').classList.toggle('single',!paired);
+  $('alterationdetails').hidden=!paired;
+  const alphaView=paired?original.hasAlpha&&suspect.hasAlpha:!!current()?.hasAlpha;
+  updateSelect('channel',[...(alphaView?'RGBA':'RGB')],'R','Visualizzazione');
   for (const [id, item, label] of [['order', suspect, 'Estrazione'], ['encorder', original, 'Encoder']]) {
     const all = permutations(item?.hasAlpha ? 'RGBA' : 'RGB'), preferred = ['RGB', 'R', 'G', 'B', 'BGR', 'RG', 'RB', 'GB', 'A', 'RGBA'].filter(v => all.includes(v));
     updateSelect(id, [...preferred, ...all.filter(v => !preferred.includes(v))], 'RGB', label);
@@ -126,8 +134,8 @@ function updateControls() {
   refreshGeneration(); $('extract').disabled=!suspect||!n; $('extoffpick').disabled=!suspect; $('encoffpick').disabled=!original; markOffset();
 }
 function fitZoom() {
-  const items = [original, current()].filter(Boolean); if (!items.length || panels[0].hidden) return;
-  const widths = [...document.querySelectorAll('.viewport')].map(e => e.clientWidth).filter(n => n > 0); if (!widths.length) return;
+  const items = (comparable()?[original,suspect]:[current()]).filter(Boolean); if (!items.length || panels[0].hidden) return;
+  const widths = [...document.querySelectorAll('#analysiscomparison > div:not([hidden]) .viewport')].map(e => e.clientWidth).filter(n => n > 0); if (!widths.length) return;
   zoom = Math.min(24, Math.min(...widths) / Math.max(...items.map(i => i.width)), Math.min(...[...document.querySelectorAll('.viewport')].map(e=>e.clientHeight).filter(n=>n>0)) / Math.max(...items.map(i => i.height))); $('zoom').value = String(Math.log(zoom));
 }
 function drawCanvas(element, item) {
@@ -137,27 +145,40 @@ function drawCanvas(element, item) {
   element.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(item.data), item.width, item.height), 0, 0);
   wrap.classList.toggle('gridded', $('grid').checked && zoom >= 5); wrap.style.setProperty('--zoom', zoom + 'px');
 }
+let alterationCache=null;
+function countAlterations(a,b){const n=a.hasAlpha&&b.hasAlpha?4:3,counts=Array.from({length:n},()=>Array(8).fill(0));for(let i=0;i<a.data.length;i+=4)for(let c=0;c<n;c++){let x=a.data[i+c]^b.data[i+c];for(let k=0;x;k++,x>>>=1)counts[c][k]+=x&1;}return counts;}
+function renderAlterations(){const el=$('alterationmatrix');if(!comparable()){el.replaceChildren();alterationCache=null;return;}if(alterationCache?.a===original&&alterationCache?.b===suspect)return;const counts=countAlterations(original,suspect);alterationCache={a:original,b:suspect};const table=document.createElement('table'),head=table.createTHead().insertRow();for(const label of ['Canale','7','6','5','4','3','2','1','0']){const th=document.createElement('th');th.textContent=label;head.append(th);}const body=table.createTBody();counts.forEach((row,c)=>{const tr=body.insertRow();tr.insertCell().textContent='RGBA'[c];for(let k=7;k>=0;k--){const btn=document.createElement('button');btn.textContent=row[k].toLocaleString('it-IT');btn.classList.toggle('altered',row[k]>0);btn.title='RGBA'[c]+k+' · '+row[k]+' bit alterati';btn.onclick=()=>{$('view').value='xor';$('channel').value='RGBA'[c];$('bit').value=String(k);render();};tr.insertCell().append(btn);}});el.replaceChildren(table);}
+for(const btn of document.querySelectorAll('#analysisviews button'))btn.onclick=()=>{$('view').value=btn.dataset.view;render();};
+$('analysisSource').onchange=render;
+for(const c of [canvas,reference]){c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();const x=Math.floor((e.clientX-r.left)*c.width/r.width),y=Math.floor((e.clientY-r.top)*c.height/r.height);$('analysiscoords').textContent=x>=0&&y>=0&&x<c.width&&y<c.height?'X: '+x+' · Y: '+y:'X: — · Y: —';});c.addEventListener('pointerleave',()=>{$('analysiscoords').textContent='X: — · Y: —';});}
 function render() {
   updateControls(); if (autoFit) fitZoom(); $('zoomvalue').textContent = (zoom * 100).toLocaleString('it-IT', {maximumFractionDigits: zoom < 0.01 ? 4 : 1}) + '%';
   const view = $('view').value, base = current(), paired = comparable();
-  document.querySelectorAll('.plane-control').forEach(e => e.hidden = !['plane', 'xor'].includes(view)); $('viewtitle').textContent = $('view').selectedOptions[0].textContent; $('planeinfo').textContent = ''; planeBuffer = null;
-  let output = base;
-  if (base && view === 'diff' && paired) {
-    const data = new Uint8ClampedArray(base.data.length), names = original.hasAlpha && suspect.hasAlpha ? 'RGBA' : 'RGB'; let transparentChanges = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      const changed = [...names].some(c => original.data[i + 'RGBA'.indexOf(c)] !== suspect.data[i + 'RGBA'.indexOf(c)]);
-      if (changed && ((original.hasAlpha && original.data[i + 3] === 0) || (suspect.hasAlpha && suspect.data[i + 3] === 0))) transparentChanges++;
-      data.set(changed ? [255, 80, 80, 255] : [20, 25, 30, 255], i);
-    }
-    output = artifact(data, base.width, base.height, true, 'Differenze'); $('planeinfo').textContent = `${transparentChanges} pixel alterati coinvolgono almeno un pixel con A=0: le differenze possono essere invisibili nell’anteprima.`;
+  document.querySelectorAll('.plane-control').forEach(e=>e.hidden=!['plane','xor'].includes(view));
+  const ch=$('channel').value,bit=Number($('bit').value),key=ch+bit;
+  const name=base===original?'Originale':'Sospetta';
+  $('referencetitle').textContent=['plane','xor'].includes(view)?'Originale · '+key:'Originale';
+  $('viewtitle').textContent=view==='diff'?'Mappa dei pixel alterati':view==='xor'?'XOR · '+key:view==='plane'?name+' · '+key:name;
+  $('planeinfo').textContent='';planeBuffer=null;
+  let left=paired?original:null,output=base;
+  if(base&&view==='diff'&&paired){
+    const data=new Uint8ClampedArray(base.data.length),n=original.hasAlpha&&suspect.hasAlpha?4:3;
+    let changedCount=0,transparent=0;
+    for(let i=0;i<data.length;i+=4){let changed=false;for(let c=0;c<n;c++)if(original.data[i+c]!==suspect.data[i+c])changed=true;
+      const v=changed?255:0;data[i]=data[i+1]=data[i+2]=v;data[i+3]=255;
+      if(changed){changedCount++;if((original.hasAlpha&&original.data[i+3]===0)||(suspect.hasAlpha&&suspect.data[i+3]===0))transparent++;}}
+    output=planeBuffer=artifact(data,base.width,base.height,true,'Differenze');
+    $('planeinfo').textContent='Bianco = pixel alterato; nero = invariato. '+changedCount+' pixel alterati; '+transparent+' coinvolgono trasparenza totale.';
   }
-  if (base && (view === 'plane' || view === 'xor')) {
-    const source = suspect || original, ref = view === 'xor' ? original : null;
-    const data = C.plane(source.data, $('channel').value, Number($('bit').value), ref?.data ?? null, source.hasAlpha, ref ? ref.hasAlpha : source.hasAlpha);
-    planeBuffer = artifact(data, source.width, source.height, true, 'Piano'); output = planeBuffer; let n = 0; for (let i = 0; i < data.length; i += 4) if (data[i] === 255) n++;
-    $('planeinfo').textContent = view === 'xor' ? `Bianco = bit modificato; nero = invariato. ${n} bit modificati.` : `Bianco = 1; nero = 0. ${n} bit a 1.`;
+  if(base&&['plane','xor'].includes(view)){
+    const make=(item,ref=null)=>artifact(C.plane(item.data,ch,bit,ref?.data??null,item.hasAlpha,ref?ref.hasAlpha:item.hasAlpha),item.width,item.height,true,'Piano');
+    if(paired)left=make(original);
+    output=planeBuffer=make(base,view==='xor'?original:null);
+    const count=item=>{let n=0;for(let i=0;i<item.data.length;i+=4)if(item.data[i]===255)n++;return n;};
+    $('planeinfo').textContent=view==='xor'?'Bianco = bit modificato; nero = invariato. '+count(output)+' bit modificati.':'Bianco = 1; nero = 0. '+(left?'Originale: '+count(left)+' bit a 1 · ':'')+name+': '+count(output)+' bit a 1.';
   }
-  $('saveplane').hidden = !planeBuffer; drawCanvas(reference, original); drawCanvas(canvas, output);
+  $('saveplane').hidden=!planeBuffer;drawCanvas(reference,left);drawCanvas(canvas,output);
+  renderAlterations();
   const preview = $('coverpreview'); preview.hidden = !original; $('coverinfo').textContent = original ? describe(original) : 'Nessuna immagine originale caricata.';
   if (original) { preview.width = original.width; preview.height = original.height; preview.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(original.data), original.width, original.height), 0, 0); }
   else { preview.width = 1; preview.height = 1; preview.getContext('2d').clearRect(0, 0, 1, 1); }
@@ -221,7 +242,7 @@ for(const c of panCanvases){
  c.addEventListener('pointerleave',()=>{if(drag&&!drag.moved)drag=null;});
 }
 for (const c of [canvas, reference]) {
-  c.onclick = e => { if (panSuppressed.has(c)) { panSuppressed.delete(c); return; } c.focus({preventScroll: true}); if (c === reference && original && suspect && !comparable() && $('view').value !== 'original') { $('view').value = 'original'; render(); } const r = c.getBoundingClientRect(); if (r.width && r.height) inspect(Math.floor((e.clientX - r.left) * c.width / r.width), Math.floor((e.clientY - r.top) * c.height / r.height)); };
+  c.onclick = e => { if (panSuppressed.has(c)) { panSuppressed.delete(c); return; } c.focus({preventScroll: true}); const r = c.getBoundingClientRect(); if (r.width && r.height) inspect(Math.floor((e.clientX - r.left) * c.width / r.width), Math.floor((e.clientY - r.top) * c.height / r.height)); };
   c.onkeydown = e => { const d = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1]}[e.key], base = current(); if (!d || !base) return; e.preventDefault(); inspect(...C.move(...selected, ...d, base.width, base.height));
     for (const v of [canvas, reference]) { if (v.parentElement.hidden) continue; const vp = v.parentElement.parentElement, x = selected[0] * zoom, y = selected[1] * zoom; if (x < vp.scrollLeft) vp.scrollLeft = x; else if (x + zoom > vp.scrollLeft + vp.clientWidth) vp.scrollLeft = x + zoom - vp.clientWidth; if (y < vp.scrollTop) vp.scrollTop = y; else if (y + zoom > vp.scrollTop + vp.clientHeight) vp.scrollTop = y + zoom - vp.clientHeight; }
   };
@@ -237,7 +258,7 @@ function created(data, name) {
 
 
 $('report').onclick = () => download(new Blob(['# Relazione SteganoLab\n\n' + $('brief').textContent + '\n\n' + $('notes').value + '\n\nBit: ' + bits + '\n\nDecodifica: ' + $('decoded').textContent], {type: 'text/markdown'}), 'relazione.md');
-const steps = ['Confronta i reperti e formula una prima ipotesi.', 'Attiva Differenze e osserva dove si concentrano le alterazioni.', 'Ispeziona almeno cinque pixel: quali bit cambiano?', 'Raccogli i bit della sospetta, anche quelli invariati.', 'Decodifica i byte e verifica la tua ipotesi.', 'Scrivi ed esporta la relazione.'];
+const steps = ['Confronta i reperti e formula una prima ipotesi.', 'Attiva Mappa dei pixel alterati e osserva dove si concentrano le alterazioni.', 'Ispeziona almeno cinque pixel: quali bit cambiano?', 'Raccogli i bit della sospetta, anche quelli invariati.', 'Decodifica i byte e verifica la tua ipotesi.', 'Scrivi ed esporta la relazione.'];
 function guide() { const visual = ['Confronta i reperti e formula una ipotesi.', 'Esplora i piani dei canali.', 'Cerca una figura riconoscibile.', 'Annota canale e posizione del bit.', 'Scarica il piano e descrivi la figura.', 'Esporta la relazione.']; $('guide').textContent = `${step + 1} / ${steps.length} — ${([3, 4].includes(Number($('mission').value)) ? visual : steps)[step]}`; $('prevstep').disabled = step === 0; $('nextstep').disabled = step === steps.length - 1; }
 $('prevstep').onclick = () => { step = Math.max(0, step - 1); guide(); }; $('nextstep').onclick = () => { step = Math.min(steps.length - 1, step + 1); guide(); };
 $('load').onclick = () => {
