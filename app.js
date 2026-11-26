@@ -116,7 +116,7 @@ function updateControls() {
   $('singleSource').hidden=paired||!original||!suspect;
   if($('view').value==='original'){$('view').value='suspect';if(!paired&&original)source.value='original';}
   if(!paired&&['diff','xor'].includes($('view').value))$('view').value='suspect';
-  for(const btn of document.querySelectorAll('#analysisviews button')){btn.disabled=!any||(!paired&&['diff','xor'].includes(btn.dataset.view));btn.setAttribute('aria-pressed',String(btn.dataset.view===$('view').value));}
+  $('view').disabled=!any; for(const opt of $('view').options)opt.disabled=!paired&&['diff','xor'].includes(opt.value);
   $('referencepanel').hidden=!paired;
   $('analysiscomparison').classList.toggle('single',!paired);
   $('alterationdetails').hidden=!paired;
@@ -150,7 +150,7 @@ function drawCanvas(element, item) {
 let alterationCache=null;
 function countAlterations(a,b){const n=a.hasAlpha&&b.hasAlpha?4:3,counts=Array.from({length:n},()=>Array(8).fill(0));for(let i=0;i<a.data.length;i+=4)for(let c=0;c<n;c++){let x=a.data[i+c]^b.data[i+c];for(let k=0;x;k++,x>>>=1)counts[c][k]+=x&1;}return counts;}
 function renderAlterations(){const el=$('alterationmatrix');if(!comparable()){el.replaceChildren();alterationCache=null;return;}if(alterationCache?.a===original&&alterationCache?.b===suspect)return;const counts=countAlterations(original,suspect);alterationCache={a:original,b:suspect};const table=document.createElement('table'),head=table.createTHead().insertRow();for(const label of ['Canale','7','6','5','4','3','2','1','0']){const th=document.createElement('th');th.textContent=label;head.append(th);}const body=table.createTBody();counts.forEach((row,c)=>{const tr=body.insertRow();tr.insertCell().textContent='RGBA'[c];for(let k=7;k>=0;k--){const btn=document.createElement('button');btn.textContent=row[k].toLocaleString('it-IT');btn.classList.toggle('altered',row[k]>0);btn.title='RGBA'[c]+k+' · '+row[k]+' bit alterati';btn.onclick=()=>{$('view').value='xor';$('channel').value='RGBA'[c];$('bit').value=String(k);render();};tr.insertCell().append(btn);}});el.replaceChildren(table);}
-for(const btn of document.querySelectorAll('#analysisviews button'))btn.onclick=()=>{$('view').value=btn.dataset.view;render();};
+$('view').onchange=render;
 $('analysisSource').onchange=render;
 for(const c of [canvas,reference]){c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();const x=Math.floor((e.clientX-r.left)*c.width/r.width),y=Math.floor((e.clientY-r.top)*c.height/r.height);$('analysiscoords').textContent=x>=0&&y>=0&&x<c.width&&y<c.height?'X: '+x+' · Y: '+y:'X: — · Y: —';});c.addEventListener('pointerleave',()=>{$('analysiscoords').textContent='X: — · Y: —';});}
 function render() {
