@@ -67,6 +67,32 @@ for (const [id, slot] of [['original', 'original'], ['suspect', 'suspect'], ['co
   $(id).onchange = e => { const file = e.target.files[0]; e.target.value = ''; if (file) { if (id === 'coverfile' && mode === 'mission') setMode('manual'); loadFile(id, slot, file); } };
   $(id).addEventListener('cancel', () => say('Selezione annullata; i reperti correnti restano invariati.'));
 }
+
+const exampleNames=['Paesaggio marino','Tramonto','Mosaico geometrico','Farfalla','Bolle di sapone','Figure geometriche'];
+function examplePng(k){
+ const width=320,height=200,data=new Uint8Array(width*height*4),hasAlpha=k>=3;
+ const clamp=v=>Math.max(0,Math.min(255,Math.round(v)));
+ for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+ const u=x/width,v=y/height,X=u-.5,Y=v-.5;let r=0,g=0,b=0,a=255;
+ if(k===0){const hill=.48+.08*Math.sin(u*13)+.04*Math.cos(u*23);if(v<hill){r=110+90*v;g=180+60*v;b=240;}else if(v<.65){r=25;g=115+35*Math.sin(u*17);b=125;}else{const wave=Math.sin(v*130+u*12);r=20+20*wave;g=145+35*wave;b=190+35*wave;}}
+ if(k===1){const sun=Math.hypot(X,(v-.48)*.625)<.11;r=255-110*v;g=190-150*v;b=110+80*v;if(sun){r=255;g=230;b=120;}if(v>.68){r=65+35*Math.sin(v*100+u*5);g=35;b=95;}}
+ if(k===2){const palette=[[230,70,80],[30,150,180],[245,200,60],[55,75,120],[235,235,220]];[r,g,b]=palette[(Math.floor(x/32)+2*Math.floor(y/25))%5];}
+ if(k===3){const wing=Math.min(Math.hypot((Math.abs(X)-.19)/.19,(Y+.13)/.29),Math.hypot((Math.abs(X)-.13)/.13,(Y-.17)/.23));r=240;g=100+100*Math.abs(Math.sin(X*25+Y*12));b=80+120*Math.abs(Y);a=clamp((1-wing)*900);if(Math.abs(X)<.025&&Math.abs(Y)<.32){r=45;g=30;b=65;a=255;}}
+ if(k===4){a=0;r=90;g=180;b=240;for(const [cx,cy,rad] of [[.28,.38,.16],[.65,.55,.23],[.8,.22,.09]]){const d=Math.hypot(u-cx,(v-cy)*.625)/rad;if(d<1){a=Math.max(a,clamp(35+170*Math.pow(d,7)));r=100+120*d;g=170+70*d;b=255;}}}
+ if(k===5){a=0;r=220;g=60;b=90;if(u>.08&&u<.44&&v>.15&&v<.8)a=255;if(Math.hypot(u-.56,(v-.5)*.625)<.22){r=40;g=150;b=230;a=128;}if(u>.72&&u<.94&&v>.2&&v<.85){r=240;g=190;b=30;a=64;}}
+ const i=(y*width+x)*4;data[i]=clamp(r);data[i+1]=clamp(g);data[i+2]=clamp(b);data[i+3]=a;
+ }
+ return PngCodec.encode({width,height,data,colorType:hasAlpha?6:2,hasAlpha,bitDepth:8});
+}
+for(let k=0;k<exampleNames.length;k++){
+ const bytes=examplePng(k),blob=new Blob([bytes],{type:'image/png'}),url=URL.createObjectURL(blob);
+ const button=document.createElement('button');button.type='button';button.style.cssText='display:inline-flex;flex-direction:column;align-items:center;gap:4px;margin:4px;vertical-align:top';
+ const img=document.createElement('img');img.src=url;img.alt='';img.width=120;img.height=75;img.style.background='repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 0 0/16px 16px';
+ button.append(img,document.createTextNode(exampleNames[k]+' · '+(k<3?'RGB':'RGBA')));
+ button.onclick=()=>{if(mode==='mission')setMode('manual');loadFile('coverfile','original',new File([blob],exampleNames[k].toLowerCase().replaceAll(' ','-')+'.png',{type:'image/png'}));};
+ $('coverexamples').append(button);
+}
+
 function clearSlot(slot) {
   invalidate(slot);
   if (slot === 'original') { original = null; state('original', 'Nessun file selezionato.'); state('cover', 'Nessuna immagine originale caricata.'); }
