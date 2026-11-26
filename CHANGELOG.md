@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.3
+- Encoder disabilitato fino al caricamento di una PNG originale manuale o di esempio; informazioni delle immagini richiudibili.
+
 ## 0.6.2
 - Rimosso il caricamento di PNG segrete, anche nell’editor; sezione maschere multipiano evidenziata e riepilogo dei piani attivi. Generazione unica per testo e/o maschere.
 

@@ -1,4 +1,4 @@
-# SteganoLab 0.6.2
+# SteganoLab 0.6.3
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -81,3 +81,6 @@ Editor multipiano: nella sezione Maschere dei piani di bit, Apri editor delle ma
 
 
 Generazione unica: selezionare esplicitamente testo UTF-8 e/o maschere dell’editor, quindi usare Genera e scarica immagine steganografata. Il riepilogo indica i piani inclusi; i conflitti sullo stesso piano bloccano la generazione. Nell’editor Ctrl/Cmd+Z annulla, Ctrl+Y o Ctrl/Cmd+Shift+Z ripristina.
+
+
+Il laboratorio Encoder si attiva dopo il caricamento di una PNG originale dal PC o dalla galleria. Le immagini sintetiche delle missioni non attivano l’encoder. Le informazioni tecniche delle immagini sono consultabili espandendo Informazioni immagine.
