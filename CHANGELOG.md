@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.4
+- Sezione Credits con autore, licenza MIT e finalità didattiche ed educative; allineata l’attribuzione nel file LICENSE.
+
 ## 0.5.3
 - Esploratore UTF-8 con conversione interattiva, punti di codice Unicode, byte decimali/binari/esadecimali e conteggi; riferimento ASCII e simboli comuni integrato.
 
