@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+- Generazione unica con inclusione esplicita di testo, maschere editor e PNG segreta; blocco dei conflitti sui piani.
+- Scorciatoie standard annulla/ripristina nell’editor.
+
 ## 0.6.0
 - Editor multipiano di maschere binarie: 24 piani RGB o 32 RGBA, attivazione indipendente, disegno, import/export PNG e generazione simultanea.
 
