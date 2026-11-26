@@ -22,7 +22,9 @@ function download(blob, name) { const url = URL.createObjectURL(blob), a = docum
 function downloadPng(item, name) { download(new Blob([PngCodec.encode(item)], {type: 'image/png'}), name); }
 function state(id, text) { $(id + 'state').textContent = text; }
 function invalidate(...slots) { for (const slot of slots) generation[slot]++; }
+function byteCharacters(values){const out=[];for(let i=0;i<values.length;){const b=values[i],n=b<128?1:b>=194&&b<=223?2:b>=224&&b<=239?3:b>=240&&b<=244?4:0;if(!n){out[i++]='non valido';continue;}const seq=values.slice(i,i+n);if(!seq.slice(1).every((v,j)=>v>=128&&v<=191&&!(j===0&&((b===224&&v<160)||(b===237&&v>159)||(b===240&&v<144)||(b===244&&v>143))))){out[i++]='non valido';continue;}if(seq.length<n){while(i<values.length)out[i++]='in attesa';break;}let cp=b&(n===1?127:n===2?31:n===3?15:7);for(const v of seq.slice(1))cp=(cp<<6)|(v&63);const c=String.fromCodePoint(cp);for(let j=0;j<n-1;j++)out[i+j]='→';out[i+n-1]=cp===32?'SP':cp===10?'LF':cp===13?'CR':cp===9?'TAB':cp<32||cp>=127&&cp<=159?'U+'+cp.toString(16).toUpperCase().padStart(4,'0'):c;i+=n;}return out;}
 function showBits() {
+  const chars=byteCharacters((bits.slice(0,512).match(/.{8}/g)||[]).map(b=>parseInt(b,2)));
   const el = $('bits'); el.replaceChildren(); $('bitsummary').textContent = `${bits.length} bit raccolti · ${Math.floor(bits.length / 8)} byte completi${bits.length % 8 ? ' · ' + (bits.length % 8) + ' bit residui' : ''}`;
   let byteIndex = 0;
   for (const group of bits.slice(0, 512).match(/.{1,8}/g) || []) {
@@ -31,7 +33,7 @@ function showBits() {
     const coords = [...new Set(sources.map(p => `(${p.x}, ${p.y})`))];
     const label = document.createElement('div'); label.className = 'byte-source'; label.textContent = `${++byteIndex}. ${coords.join(' · ')}`; label.title = sources.map((p,i) => `Bit ${7-i}: (${p.x}, ${p.y}) · ${p.channel} · posizione ${p.bit}`).join('\n'); el.append(label);
     for (let i = 0; i < 8; i++) { const cell = document.createElement('span'); cell.textContent = group[i] ?? '·'; row.append(cell); }
-    const val = document.createElement('small'); val.textContent = group.length === 8 ? ' = ' + parseInt(group, 2) : ''; row.append(val); el.append(row);
+    const val = document.createElement('small'); val.textContent = group.length === 8 ? ' = ' + parseInt(group, 2) : ''; row.append(val); if(group.length===8){const char=document.createElement('small');char.className='byte-character';char.style.fontSize='inherit';char.style.fontWeight='bold';char.textContent=' · '+chars[byteIndex-1];char.title='Anteprima UTF-8: → indica un byte di una sequenza multibyte';row.append(char);} el.append(row);
   }
   if (bits.length > 512) el.append('… anteprima dei primi 512 bit'); $('decoded').textContent = '';
 }
