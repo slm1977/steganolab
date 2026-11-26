@@ -63,3 +63,6 @@ L’editor mostra le dimensioni della maschera, identiche all’originale, il nu
 
 
 Il campo Messaggio è multilinea. Il contatore mostra capacità, byte UTF-8 utilizzati e residui in funzione di canali, dimensioni e offset. Genera anteprima mostra il reperto senza scaricarlo; Scarica PNG steganografata salva l’ultima anteprima generata.
+
+
+Banco di analisi 0.7.0: Confronto immagini mostra originale e sospetta; Confronto piani di bit mostra lo stesso piano in entrambe; Mappa dei pixel alterati mostra in bianco i pixel con almeno un valore cambiato; Mappa dei bit alterati (XOR) mostra in bianco solo i bit cambiati nel piano selezionato. Nero significa invariato nelle mappe, zero nei piani. La matrice collassabile conta le alterazioni per canale e bit e apre il piano XOR selezionato. Senza coppia confrontabile si usa una vista singola; con formati diversi il confronto usa solo RGB. I parametri di estrazione restano indipendenti.
