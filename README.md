@@ -1,4 +1,4 @@
-# SteganoLab 0.6.1
+# SteganoLab 0.6.2
 
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
@@ -14,7 +14,7 @@ Apri <http://127.0.0.1:8000/> e interrompi il server con Ctrl+C. Non esporre il 
 
 1. In **Steganalizzare**, avvia una missione sintetica oppure scegli **Caricamento manuale** e carica originale e/o sospetta. Per confrontare e usare XOR servono entrambe, delle stesse dimensioni.
 2. Confronta le immagini, osserva Differenze e piani di bit, clicca un pixel e usa le frecce. Raccogli i bit della sospetta anche quando non sono cambiati, manualmente o con l'estrazione automatica; decodifica e annota osservazioni e ipotesi nella relazione.
-3. In **Steganografare** usa l'originale corrente, scegli una delle sei PNG di esempio oppure carica una copertura dal PC. Scegli canali, bit e scansione, inserisci un testo UTF-8 e genera la PNG; per una figura usa una PNG segreta delle stesse dimensioni. Ricarica il risultato per controllarlo. I controlli di visualizzazione, estrazione ed encoder sono indipendenti.
+3. In **Steganografare** usa l'originale corrente, scegli una delle sei PNG di esempio oppure carica una copertura dal PC. Scegli canali, bit e scansione, inserisci un testo UTF-8 e genera la PNG; per una figura usa l’editor delle maschere di bit. Ricarica il risultato per controllarlo. I controlli di visualizzazione, estrazione ed encoder sono indipendenti.
 
 La raccolta è limitata a 65.536 bit; la schermata ne mostra in anteprima i primi 512. La esploratore UTF-8 e l'esploratore RGBA aiutano a interpretare valori e bit; l'esploratore è una simulazione e non modifica il reperto.
 
@@ -77,7 +77,7 @@ Nel banco di analisi, Ctrl + rotellina ingrandisce o riduce attorno al puntatore
 L’Esploratore UTF-8 si apre in una finestra ampia e ridimensionabile trascinando l’angolo inferiore destro; le tabelle restano scorrevoli.
 
 
-Editor multipiano: nella sezione Nascondi immagine in bianco e nero, Crea o modifica maschere apre una matrice canale/bit (24 RGB, 32 RGBA). Clic per invertire un pixel, trascinamento per disegnare, Shift + trascinamento per spostare, zoom e griglia. Attivare i piani desiderati e salvare le maschere in memoria; Genera PNG con tutte le maschere attive sostituisce solo i piani attivi partendo dall’originale. Le maschere hanno le dimensioni dell’originale e vengono azzerate quando cambia. Importazione/esportazione PNG per singolo piano; il caricamento singolo precedente resta disponibile.
+Editor multipiano: nella sezione Maschere dei piani di bit, Apri editor delle maschere di bit apre una matrice canale/bit (24 RGB, 32 RGBA). Clic per invertire un pixel, trascinamento per disegnare, Shift + trascinamento per spostare, zoom e griglia. Attivare i piani desiderati e salvare le maschere in memoria; Genera e scarica immagine steganografata sostituisce solo i piani attivi partendo dall’originale. Le maschere hanno le dimensioni dell’originale e vengono azzerate quando cambia. Esportazione PNG per singolo piano; le maschere si creano direttamente nell’editor.
 
 
-Generazione unica: selezionare esplicitamente testo UTF-8, maschere dell’editor e/o PNG segreta caricata, quindi usare Genera e scarica immagine steganografata. Il riepilogo indica i piani inclusi; i conflitti sullo stesso piano bloccano la generazione. Nell’editor Ctrl/Cmd+Z annulla, Ctrl+Y o Ctrl/Cmd+Shift+Z ripristina.
+Generazione unica: selezionare esplicitamente testo UTF-8 e/o maschere dell’editor, quindi usare Genera e scarica immagine steganografata. Il riepilogo indica i piani inclusi; i conflitti sullo stesso piano bloccano la generazione. Nell’editor Ctrl/Cmd+Z annulla, Ctrl+Y o Ctrl/Cmd+Shift+Z ripristina.

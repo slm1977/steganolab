@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.2
+- Rimosso il caricamento di PNG segrete, anche nell’editor; sezione maschere multipiano evidenziata e riepilogo dei piani attivi. Generazione unica per testo e/o maschere.
+
 ## 0.6.1
 - Generazione unica con inclusione esplicita di testo, maschere editor e PNG segreta; blocco dei conflitti sui piani.
 - Scorciatoie standard annulla/ripristina nell’editor.
