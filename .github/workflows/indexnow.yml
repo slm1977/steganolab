@@ -1,0 +1,36 @@
+name: Notify IndexNow
+on:
+  push:
+    branches: [main]
+    paths: ['index.html', 'guide.html', 'ai-knowledge.html', 'sitemap.xml', 'robots.txt', 'a8d91e7c42b64f35a1c9e8d0726bf403.txt', '.github/workflows/indexnow.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: indexnow
+  cancel-in-progress: true
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for published Netlify pages
+        shell: bash
+        run: |
+          set -eu
+          for attempt in $(seq 1 30); do
+            ok=1
+            for file in index.html guide.html ai-knowledge.html sitemap.xml robots.txt a8d91e7c42b64f35a1c9e8d0726bf403.txt; do
+              if ! curl -fsS --max-time 20 "https://steganolab.netlify.app/$file" -o /tmp/indexnow-page || ! cmp -s "$file" /tmp/indexnow-page; then
+                ok=0
+                break
+              fi
+            done
+            if [ "$ok" = 1 ]; then exit 0; fi
+            sleep 20
+          done
+          echo "Netlify publication not verified; retry workflow after deployment."
+          exit 1
+      - name: Submit public documentation URLs
+        run: |
+          curl --fail-with-body --max-time 30 -X POST 'https://api.indexnow.org/indexnow' -H 'Content-Type: application/json' --data '{"host":"steganolab.netlify.app","key":"a8d91e7c42b64f35a1c9e8d0726bf403","keyLocation":"https://steganolab.netlify.app/a8d91e7c42b64f35a1c9e8d0726bf403.txt","urlList":["https://steganolab.netlify.app/","https://steganolab.netlify.app/guide.html","https://steganolab.netlify.app/ai-knowledge.html"]}'
