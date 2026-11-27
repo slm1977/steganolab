@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://steganolab.netlify.app/sitemap.xml
