@@ -13,23 +13,33 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Wait for published Netlify pages
         shell: bash
         run: |
           set -eu
+          base=https://steganolab.netlify.app
+          key=a8d91e7c42b64f35a1c9e8d0726bf403
           for attempt in $(seq 1 30); do
             ok=1
-            for file in index.html guide.html ai-knowledge.html sitemap.xml robots.txt a8d91e7c42b64f35a1c9e8d0726bf403.txt; do
-              if ! curl -fsS --max-time 20 "https://steganolab.netlify.app/$file" -o /tmp/indexnow-page || ! cmp -s "$file" /tmp/indexnow-page; then
+            echo "Attempt $attempt/30"
+            for path in / /guide.html /ai-knowledge.html /sitemap.xml /robots.txt "/$key.txt"; do
+              if status=$(curl -sS --max-time 20 -o /tmp/indexnow-page -w '%{http_code}' "$base$path"); then
+                echo "$path HTTP $status"
+                if [ "$status" != 200 ]; then
+                  ok=0
+                elif [ "$path" = "/$key.txt" ] && [ "$(cat /tmp/indexnow-page)" != "$key" ]; then
+                  echo "IndexNow key mismatch"
+                  ok=0
+                fi
+              else
+                echo "Connection failed: $path"
                 ok=0
-                break
               fi
             done
             if [ "$ok" = 1 ]; then exit 0; fi
             sleep 20
           done
-          echo "Netlify publication not verified; retry workflow after deployment."
+          echo "Public URL or key validation failed."
           exit 1
       - name: Submit public documentation URLs
         run: |
