@@ -1,5 +1,7 @@
 # SteganoLab 0.7.0
 
+[Apri SteganoLab online](https://steganolab.netlify.app/) · [Guida](https://steganolab.netlify.app/guide.html) · [Documentazione IA](https://steganolab.netlify.app/ai-knowledge.html)
+
 Laboratorio didattico di steganografia per studenti, anche senza programmazione. È un'app statica HTML/CSS/JavaScript: apri [index.html](index.html) in un browser moderno. Elaborazione e file restano locali; non servono account, CDN o servizi esterni.
 
 In alternativa, dalla cartella del progetto avvia un server statico locale (necessario per caricare la galleria di esempio), per esempio con Python 3:
