@@ -71,19 +71,19 @@ for (const [id, slot] of [['original', 'original'], ['suspect', 'suspect'], ['co
   $(id).addEventListener('cancel', () => say('Selezione annullata; i reperti correnti restano invariati.'));
 }
 
-const exampleNames=['Paesaggio marino','Tramonto','Mosaico geometrico', 'Poetto',
+const exampleNames=['Paesaggio marino','Tramonto','Mosaico geometrico', 'Poetto','Dolmen e tomba dei giganti',
   'Farfalla','Bolle di sapone','Figure geometriche'];
-const exampleFiles=['paesaggio-marino','tramonto','mosaico','poetto_rgb','farfalla',
+const exampleFiles=['paesaggio-marino','tramonto','mosaico','poetto_rgb','dolmen_e_tomba_giganti','farfalla',
   'bolle-di-sapone','figure-geometriche'];
 let exampleRequest=0;
 $('coverfile').addEventListener('change',()=>{exampleRequest++;});
 $('clearcover').addEventListener('click',()=>{exampleRequest++;});
 for(let k=0;k<exampleNames.length;k++){
- const filename=exampleFiles[k]+'.png',url='images/examples/'+(k<4?'rgb':'rgba')+'/'+filename;
+ const filename=exampleFiles[k]+'.png',url='images/examples/'+(k<5?'rgb':'rgba')+'/'+filename;
  const tile=document.createElement('div');tile.style.cssText='display:inline-flex;flex-direction:column;align-items:center;margin:4px;vertical-align:top';
  const button=document.createElement('button');button.type='button';button.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px';
  const img=document.createElement('img');img.src=url;img.alt='';img.width=120;img.height=75;img.style.background='repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 0 0/16px 16px';
- button.append(img,document.createTextNode(exampleNames[k]+' · '+(k<4?'RGB':'RGBA')));
+ button.append(img,document.createTextNode(exampleNames[k]+' · '+(k<5?'RGB':'RGBA')));
  button.onclick=async()=>{const token=++exampleRequest;try{const response=await fetch(url);if(!response.ok)throw Error('HTTP '+response.status);const blob=await response.blob();if(token!==exampleRequest)return;if(mode==='mission')setMode('manual');await loadFile('coverfile','original',new File([blob],filename,{type:'image/png'}));}catch(e){if(token===exampleRequest)state('cover','Errore nel caricamento dell’immagine di esempio: '+e.message);}};
  const link=document.createElement('a');link.href=url;link.download=filename;link.textContent='Scarica PNG';tile.append(button,link);$('coverexamples').append(tile);
 }
